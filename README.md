@@ -144,13 +144,13 @@ Pattern Categories Hub
 - **Git History**: Complete commit history and development timeline ([git_history.md](git_history.md))
 
 ### **Reference Files**
-- [`design_patterns_rules.md`](design_patterns_rules.md) - Implementation rules and pattern matrix
-- [`documentation_tools.md`](documentation_tools.md) - PlantUML and documentation tools
-- [`firebase_setup.md`](firebase_setup.md) - Firebase configuration guide
-- [`firebase_analytics_plan.md`](firebase_analytics_plan.md) - Analytics implementation plan
-- [`git_commands.md`](git_commands.md) - Git workflow and scripts
-- [`legal_documents.md`](legal_documents.md) - Privacy policy and terms of use
-- [`ci_cd_proposal.md`](ci_cd_proposal.md) - CI/CD strategy with GitHub Actions
+- [`design_patterns_rules.md`](docs/design_patterns_rules.md) - Implementation rules and pattern matrix
+- [`documentation_tools.md`](docs/documentation_tools.md) - PlantUML and documentation tools
+- [`firebase_setup.md`](docs/firebase_setup.md) - Firebase configuration guide
+- [`firebase_analytics_plan.md`](docs/firebase_analytics_plan.md) - Analytics implementation plan
+- [`git_commands.md`](docs/git_commands.md) - Git workflow and scripts
+- [`legal_documents.md`](docs/legal_documents.md) - Privacy policy and terms of use
+- [`ci_cd_proposal.md`](docs/ci_cd_proposal.md) - CI/CD strategy with GitHub Actions
 
 ---
 
