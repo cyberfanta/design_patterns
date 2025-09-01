@@ -149,10 +149,10 @@ class AnalyticsConsentManager {
 ### **Firebase Services Integration**
 ```yaml
 dependencies:
-  firebase_analytics: ^10.7.4
-  firebase_performance: ^0.9.3+8
-  firebase_crashlytics: ^3.4.8
-  firebase_app_check: ^0.2.1+8
+  firebase_analytics: ^12.0.0
+  firebase_performance: ^0.11.0
+  firebase_crashlytics: ^5.0.0
+  firebase_app_check: ^0.4.0
 ```
 
 ### **Analytics Service Architecture**
