@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "351706241322",
+    "project_id": "design-patterns-665ae",
+    "storage_bucket": "design-patterns-665ae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351706241322:android:0337c451fa6b1b0db02653",
+        "android_client_info": {
+          "package_name": "com.cyberfanta.design_patterns"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuB-u1NCF57lkKQHz6xvke5Wfbq6JWOzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

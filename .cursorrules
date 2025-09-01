@@ -1,0 +1,222 @@
+# Cursor Rules - Design Patterns Flutter App
+# Clean Architecture + MVVM + TDD
+
+## Arquitectura General
+- Usar Clean Architecture con 3 capas principales: Presentation, Domain, Data
+- Implementar MVVM (Model-View-ViewModel) como patrón de presentación
+- Cada capa debe ser independiente y comunicarse solo con la capa adyacente
+
+## Estructura de Carpetas
+```
+lib/
+├── core/               # Utilidades compartidas, errores, constantes
+├── features/           # Funcionalidades organizadas por feature
+│   └── [feature_name]/
+│       ├── data/       # Capa de datos
+│       │   ├── datasources/    # Fuentes de datos (API, DB local)
+│       │   ├── models/         # Modelos de datos (DTOs)
+│       │   └── repositories/   # Implementación de repositorios
+│       ├── domain/     # Capa de dominio
+│       │   ├── entities/       # Entidades de negocio
+│       │   ├── repositories/   # Contratos de repositorios
+│       │   ├── usecases/       # Casos de uso
+│       │   └── viewmodels/     # ViewModels (lógica de presentación)
+│       └── presentation/ # Capa de presentación
+│           ├── pages/          # Páginas/Pantallas
+│           └── widgets/        # Widgets reutilizables
+└── main.dart
+```
+
+## Reglas de Implementación
+
+### Capa de Presentación (Presentation)
+- Las vistas (pages/widgets) SOLO pueden llamar a funciones de ViewModels del Domain
+- NO acceso directo a repositorios o casos de uso desde las vistas
+- Usar StatelessWidget siempre que sea posible
+- Los StatefulWidget solo para manejo de lifecycle específico
+
+### Capa de Dominio (Domain)
+- Contiene ViewModels que manejan la lógica de presentación
+- Contiene casos de uso (UseCases) que encapsulan la lógica de negocio
+- Contiene contratos de repositorios (abstract classes)
+- Contiene entidades de negocio puras (sin dependencias externas)
+- ViewModels pueden usar múltiples casos de uso si es necesario
+
+### Capa de Datos (Data)
+- Contiene modelos de datos (DTOs) que extienden de entidades del domain
+- Implementa los contratos de repositorios definidos en domain
+- Contiene datasources (local y remote) para acceso a datos
+- Maneja conversión entre modelos de datos y entidades
+
+## Test Driven Development (TDD)
+- OBLIGATORIO: Escribir tests ANTES de implementar funcionalidad
+- Cobertura mínima del 80% en todas las capas
+- Estructura de tests debe espejear la estructura del código:
+```
+test/
+├── features/
+│   └── [feature_name]/
+│       ├── data/
+│       ├── domain/
+│       └── presentation/
+```
+
+## Patrones de Diseño a Implementar
+- Repository Pattern (acceso a datos)
+- Dependency Injection (get_it)
+- Observer Pattern (ViewModels notifican cambios)
+- Factory Pattern (creación de objetos complejos)
+- Strategy Pattern (algoritmos intercambiables)
+- Command Pattern (acciones/casos de uso)
+
+## Convenciones de Código
+- Usar camelCase para variables y funciones
+- Usar PascalCase para clases
+- Usar snake_case para archivos
+- Documentar todas las clases públicas
+- Implementar equals() y hashCode() en entidades
+- Usar const constructors cuando sea posible
+
+## Dependencias Requeridas
+- get_it (Dependency Injection)
+- flutter_test (Testing)
+- mockito (Mocking para tests)
+- test_coverage (Análisis de cobertura)
+
+## Ejemplo de Flujo
+1. Vista -> ViewModel.metodo()
+2. ViewModel -> UseCase.execute()
+3. UseCase -> Repository.metodo()
+4. Repository -> DataSource.metodo()
+5. DataSource -> API/DB
+
+## Reglas de Commits
+- Seguir TDD: test failing -> test passing -> refactor
+- Cada commit debe mantener tests pasando
+- Formato: "feat|fix|test: descripción"
+
+## Reglas Específicas del Proyecto
+- **OBLIGATORIO**: Revisar y seguir las reglas detalladas en `design_patterns_rules.md`
+- Este archivo contiene el contexto específico del Tower Defense y matriz de patrones obligatorios
+
+## Uso Explícito de Patrones de Diseño
+- **OBLIGATORIO**: Al implementar cualquier patrón, documentar explícitamente:
+  - **WHERE** (¿Dónde se usa?): Ubicación exacta en código
+  - **HOW** (¿Cómo se implementa?): Descripción técnica de la implementación
+  - **WHY** (¿Por qué se eligió?): Justificación de la elección del patrón
+- Usar comentarios con formato específico: `// PATTERN: [PatternName] - [Explanation]`
+
+## Convenciones de Idioma y Texto
+- **OBLIGATORIO**: Todo código, variables, funciones, clases y comentarios EN INGLÉS
+- **PROHIBIDO**: Texto hardcoded en cualquier idioma
+- **OBLIGATORIO**: Sistema multiidioma desde el inicio (English, Spanish, French, German)
+- **OBLIGATORIO**: Usar Translation Service con patrones Observer + Memento + Singleton
+- **OBLIGATORIO**: Detectar idioma del sistema automáticamente
+
+## Restricciones de IA
+- **PROHIBIDO**: La IA NO puede usar comandos Git directamente
+- **OBLIGATORIO**: Para borrar archivos o rollback, solicitar apoyo al usuario
+- **REFERENCIA**: Ver comandos disponibles en `git_commands.md`
+
+## Documentación y Diagramas
+- **OBLIGATORIO**: Usar formato `///` para documentación generativa
+- **OBLIGATORIO**: Documentar cada clase pública con propósito y patrón usado
+- **REFERENCIA**: Herramientas y comandos en `documentation_tools.md`
+- **OBLIGATORIO**: Crear diagramas UML con PlantUML para patrones implementados
+
+## Configuración y Persistencia
+- **OBLIGATORIO**: Configuración del sistema con SQLite local (mínimo: idioma)
+- **OBLIGATORIO**: Usar patrones Memento + Repository para configuración
+- **OBLIGATORIO**: Perfil de usuario en Firebase (ver `firebase_setup.md`)
+- **OBLIGATORIO**: Usar patrones Proxy + Memento + Observer para perfil
+
+## Seguridad
+- **OBLIGATORIO**: Clase dedicada para limpieza de inputs usando patrones
+- **OBLIGATORIO**: Clase para throttling de Firebase con patrones
+- **OBLIGATORIO**: Validación en todas las capas (Presentation, Domain, Data)
+
+## UI/UX Específica
+- **OBLIGATORIO**: Diseño minimalista sin header ni footer
+- **OBLIGATORIO**: No usar SafeArea
+- **OBLIGATORIO**: Status bar y navigation bar en negro
+- **OBLIGATORIO**: Fondo con Mesh Gradient (verde/crema)
+- **OBLIGATORIO**: Componentes con Glassmorphism en clases reutilizables
+- **OBLIGATORIO**: Drawer con navegación y "Buy me a coffee"
+- **OBLIGATORIO**: Multiplataforma: Web, Android, iOS
+
+## Buy Me a Coffee Específico
+- **OBLIGATORIO**: Usar frases específicas: "Si te gustó esta app, puedes invitarme un café", "Tu apoyo me ayuda a seguir creando", "No es necesario, pero se agradece mucho"
+- **OBLIGATORIO**: Imagen en /assets/images/ y agregada al pubspec.yaml
+- **OBLIGATORIO**: Componente reutilizable con patrón de diseño
+
+## Perfil de Usuario Completo
+- **OBLIGATORIO**: Vista de perfil con foto, datos personales y configuraciones
+- **OBLIGATORIO**: Login options: Usuario/Password, Google, Apple con checkbox "mantener login"
+- **OBLIGATORIO**: Opción para borrar cuenta y datos personales (GDPR compliance)
+- **OBLIGATORIO**: Checkbox obligatorio para aceptar términos y política de privacidad
+- **OBLIGATORIO**: Enlaces a documentos legales (términos de uso, política de privacidad)
+
+## Arquitectura de UI
+- **OBLIGATORIO**: Splash customizable
+- **OBLIGATORIO**: Home explicativo + PageView para continuar
+- **OBLIGATORIO**: 3 categorías de patrones (Creational, Structural, Behavioral)
+- **OBLIGATORIO**: Diseños diferentes por categoría:
+  - Creational: Tabs
+  - Structural: PageView
+  - Behavioral: [Proponer diseño alternativo]
+- **OBLIGATORIO**: Mostrar código en Flutter, TypeScript, Kotlin, Swift, Java, C#
+- **OBLIGATORIO**: Botón copiar al portapapeles en componente código
+
+## Visualización y Diagramas - SEPARACIÓN CRÍTICA
+- **DOCUMENTACIÓN**: PlantUML para diagramas UML técnicos (docs/generated/)
+- **APP VISUAL**: Grafos interactivos por patrón mostrados en la aplicación
+- **DIFERENCIA**: UML = documentación técnica, Grafos = educación visual
+- **HERRAMIENTA**: node-plantuml para docs, custom widgets para grafos app
+- **CONTEXTO**: Ambos usan ejemplos Tower Defense específicos
+
+## Arquitectura por Categoría de Patrones
+- **OBLIGATORIO**: Arquitectura de presentación específica por categoría:
+  - **Creational Patterns**: MVC + Cubits (flutter_bloc)
+  - **Structural Patterns**: MVP + Blocs (flutter_bloc)
+  - **Behavioral Patterns**: MVVM-C + GetX  
+  - **Resto de la aplicación**: MVVM + Riverpod
+- **UBICACIÓN**: ViewModels en capa Domain (domain/viewmodels/)
+- **CONSUMO**: Desde Presentation layer únicamente
+
+## Límites y Modularización
+- **OBLIGATORIO**: Máximo 400 líneas de código por archivo
+- **OBLIGATORIO**: Descomponer en widgets reutilizables
+- **OBLIGATORIO**: Usar Facade Pattern para modularizar funcionalidades complejas
+- **OBLIGATORIO**: Separar responsabilidades con patrones de diseño
+
+## Ciclo de Vida de la Aplicación
+- **OBLIGATORIO**: Manejo completo de lifecycle (pause/resume)
+- **OBLIGATORIO**: Preservar estado y datos al cambiar de aplicación
+- **OBLIGATORIO**: Recovery automático sin pérdida de información
+- **PATRÓN**: Usar Memento + Observer para state persistence
+
+## Firebase Services Completos
+- **OBLIGATORIO**: Firebase ya configurado, usar todos los servicios:
+  - Authentication (Email/Password, Google, Apple)
+  - Firestore Database (user profiles, app config)
+  - Storage (profile images)
+  - Analytics (ver plan detallado en `firebase_analytics_plan.md`)
+  - Performance Monitoring
+  - App Check (security)
+  - Crashlytics (error reporting)
+
+## Referencias Obligatorias
+- **Reglas de negocio**: `design_patterns_rules.md`
+- **Herramientas de documentación**: `documentation_tools.md`
+- **Comandos Git**: `git_commands.md`
+- **Configuración Firebase**: `firebase_setup.md`
+- **Plan de Analytics**: `firebase_analytics_plan.md`
+- **CI/CD Strategy**: `ci_cd_proposal.md`
+- **Project Overview**: `README.md`
+- **Legal Documents**: `legal_documents.md`
+
+## Documentación
+- Cada patrón de diseño implementado debe tener comentarios explicativos
+- README.md debe documentar la arquitectura y patrones utilizados  
+- Ejemplos de uso en cada capa principal
+- Seguir estructura y reglas definidas en archivos MD de referencia
