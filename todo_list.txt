@@ -1,0 +1,80 @@
+# 📋 TODO List - Design Patterns Flutter App
+
+## 🚧 EN PROGRESO (In Progress)
+- [ ] Implementar sistema multiidioma con Observer + Memento + Singleton
+
+## 🔧 CONFIGURACIÓN Y PERSISTENCIA (Configuration & Persistence)
+- [ ] Implementar configuración con SQLite usando Memento + Repository
+
+## 🔐 AUTENTICACIÓN Y SEGURIDAD (Authentication & Security)  
+- [ ] Implementar perfil de usuario con Firebase usando Proxy + Memento + Observer
+- [ ] Crear clases de seguridad (input cleaning + throttling) con patrones
+- [ ] Implementar vista completa de perfil con login options, delete account, legal docs
+- [ ] Implementar UI para mostrar términos y política de privacidad
+- [ ] Implementar funcionalidad completa GDPR (borrar cuenta y datos)
+
+## 🎨 ARQUITECTURA DE UI (UI Architecture)
+- [ ] Implementar arquitectura UI completa (splash, home, categorías, drawer)
+- [ ] Crear componentes Glassmorphism reutilizables con patrones
+- [ ] Crear componente de código con soporte multi-lenguaje y copy-to-clipboard
+- [ ] Diseñar y proponer UI alternativa para categoría Behavioral (no tabs, no pageview)
+
+## 📊 GESTIÓN DE ESTADO (State Management)
+- [ ] Implementar arquitectura de estado: Cubits (Creational), Blocs (Structural), GetX (Behavioral), Riverpod (Global)
+- [ ] Implementar arquitecturas específicas: MVC+Cubits, MVP+Blocs, MVVM-C+GetX, MVVM+Riverpod
+
+## 🔄 CICLO DE VIDA Y OPTIMIZACIÓN (Lifecycle & Optimization)
+- [ ] Implementar gestión completa de ciclo de vida con Memento + Observer
+- [ ] Establecer límites de 400 líneas y modularización con Facade
+
+## 🔥 FIREBASE Y SERVICIOS (Firebase & Services)
+- [ ] Integrar todos los servicios Firebase: Analytics, Performance, AppCheck, Crashlytics
+
+## 📚 DOCUMENTACIÓN Y DIAGRAMAS (Documentation & Diagrams)
+- [ ] Generar diagramas específicos para cada patrón con contexto Tower Defense
+- [ ] Implementar sistema PlantUML para documentación técnica (docs/generated/)
+- [ ] Implementar grafos visuales interactivos para mostrar en la app
+- [ ] Ejecutar scripts de documentación generados para validar funcionamiento
+
+## 🚀 CI/CD Y DEPLOYMENT (CI/CD & Deployment)
+- [ ] Configurar GitHub Actions según proposal para CI/CD + Firebase web deployment
+
+## 📝 TAREAS ÚNICAS (One-Time Tasks)
+- [ ] Ejecutar script de bitácora Git una sola vez para generar git_history.md
+- [ ] Investigar y corregir el error de serialización en singleton_test.dart
+
+## ✅ COMPLETADAS RECIENTEMENTE (Recently Completed)
+- [x] Crear sistema de reglas base (.cursorrules + design_patterns_rules.md)
+- [x] Configurar dependencias necesarias (get_it, mockito, test_coverage)
+- [x] Crear estructura de carpetas según Clean Architecture + features
+- [x] Implementar patrones base en core/patterns/
+- [x] Crear documentation_tools.md con PlantUML y herramientas gratis
+- [x] Crear git_commands.md con script para bitácora de commits
+- [x] Crear firebase_setup.md con pasos para configurar Firebase
+- [x] Crear README.md completo del proyecto con misión y enlaces
+- [x] Actualizar packages desactualizados: flutter_highlight, dartz, golden_toolkit, dart_code_metrics, validators
+- [x] Crear docs/dependencies_mapping.md con mapeo completo de todas las librerías
+- [x] Arreglar los errores en lib/core/utils/either_extensions.dart (invocation_of_non_function_expression)
+- [x] Crear una clase que se encargue de las salidas por consola, implementando patrones para ello
+- [x] Corregir los tests de widget que estaban fallando
+
+## 📏 MÉTRICAS DE PROGRESO
+- Total de tareas: 45
+- Completadas: 25
+- Pendientes: 19
+- En progreso: 1
+- Progreso: 55.6% ✨
+
+## 📋 INSTRUCCIONES DE USO
+1. Marcar tareas completadas cambiando `[ ]` por `[x]`
+2. Mover tareas completadas a la sección "COMPLETADAS RECIENTEMENTE"
+3. Actualizar métricas de progreso regularmente
+4. Agregar nuevas tareas según surjan requerimientos
+
+## 🔄 ÚLTIMA ACTUALIZACIÓN
+- Fecha: Diciembre 2024
+- Estado: Fase de implementación de features avanzados
+- Próxima prioridad: Sistema multiidioma y configuración SQLite
+
+---
+*Este archivo se mantiene sincronizado con el TODO tracking interno de la sesión*

@@ -77,6 +77,12 @@ test/
 - Implementar equals() y hashCode() en entidades
 - Usar const constructors cuando sea posible
 
+## Convenciones de Logging
+- **OBLIGATORIO**: Para imprimir en consola, usar ÚNICAMENTE `Log.debug()`, `Log.info()`, `Log.warning()`, `Log.error()`, `Log.success()`
+- **PROHIBIDO**: Usar `print()` statements directos en cualquier código
+- **UBICACIÓN**: Importar desde `package:design_patterns/core/logging/logging.dart`
+- **VENTAJAS**: Sin warnings, timestamps automáticos, diferentes niveles, silent en producción
+
 ## Dependencias Requeridas
 - get_it (Dependency Injection)
 - flutter_test (Testing)
