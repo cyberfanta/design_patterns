@@ -72,3 +72,19 @@ class CacheFailure extends Failure {
     super.code = 'CACHE_ERROR',
   });
 }
+
+// Server failures
+class ServerFailure extends Failure {
+  const ServerFailure({
+    required super.message,
+    super.code = 'SERVER_ERROR',
+  });
+}
+
+// Not found failures
+class NotFoundFailure extends Failure {
+  const NotFoundFailure({
+    required super.message,
+    super.code = 'NOT_FOUND_ERROR',
+  });
+}

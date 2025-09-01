@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/logging/logging.dart';
 // Import pattern demonstrations
-import 'core/logging/console_logger.dart';
 import 'core/patterns/behavioral/memento.dart';
 import 'core/patterns/behavioral/observer.dart';
 import 'core/patterns/creational/abstract_factory.dart';
@@ -20,8 +20,10 @@ import 'core/patterns/creational/factory_method.dart';
 import 'core/patterns/creational/prototype.dart';
 import 'core/patterns/creational/singleton.dart';
 import 'core/patterns/structural/adapter.dart';
+// Import localization system
+import 'features/localization/localization.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set system UI style - black status bar and navigation bar
@@ -32,6 +34,17 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.light,
   ));
 
+  // PATTERN: Dependency Injection - Initialize localization system
+  // Initialize localization system with Observer + Memento + Singleton patterns
+  try {
+    Log.debug('Initializing Design Patterns Tower Defense App...');
+    await LocalizationInjection.init();
+    Log.success('Localization system initialized successfully');
+  } catch (e) {
+    Log.error('Failed to initialize localization: $e');
+    // Continue with app launch even if localization fails
+  }
+
   runApp(const DesignPatternsApp());
 }
 
@@ -41,7 +54,8 @@ class DesignPatternsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: AppConstants.appName,
+      title: LocalizationHelpers.isInitialized ? tr('app_name') : AppConstants
+          .appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -63,8 +77,39 @@ class PatternDemoPage extends StatefulWidget {
   State<PatternDemoPage> createState() => _PatternDemoPageState();
 }
 
-class _PatternDemoPageState extends State<PatternDemoPage> {
+class _PatternDemoPageState extends State<PatternDemoPage>
+    implements Observer<LanguageChangeEvent> {
   String _currentDemo = 'Welcome';
+
+  @override
+  void initState() {
+    super.initState();
+    // PATTERN: Observer - Listen for language changes
+    if (LocalizationHelpers.isInitialized) {
+      LocalizationInjection.translationService.addObserver(this);
+    }
+  }
+
+  @override
+  void dispose() {
+    // PATTERN: Observer - Clean up observer registration
+    if (LocalizationHelpers.isInitialized) {
+      LocalizationInjection.translationService.removeObserver(this);
+    }
+    super.dispose();
+  }
+
+  @override
+  void update(LanguageChangeEvent event) {
+    // PATTERN: Observer - React to language changes
+    Log.debug('UI received language change notification: ${event.oldLanguage
+        .code} -> ${event.newLanguage.code}');
+    if (mounted) {
+      setState(() {
+        // Force UI rebuild with new language
+      });
+    }
+  }
 
   final List<PatternDemo> _patterns = [
     PatternDemo(
@@ -120,6 +165,20 @@ class _PatternDemoPageState extends State<PatternDemoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          LocalizationHelpers.isInitialized
+              ? tr('app_name')
+              : 'Design Patterns - Tower Defense Edition',
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF2E8B57).withValues(alpha: 0.8),
+        elevation: 0,
+        actions: [
+          // PATTERN: Observer - Language selector updates UI automatically
+          _buildLanguageSelector(),
+        ],
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -132,84 +191,141 @@ class _PatternDemoPageState extends State<PatternDemoPage> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: const Text(
-                  'Design Patterns - Tower Defense Edition',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+        child: Column(
+          children: [
+            // Content
+            Expanded(
+              child: Row(
+                children: [
+                  // Pattern List Sidebar
+                  Container(
+                    width: 250,
+                    margin: const EdgeInsets.all(16),
+                    child: ListView.builder(
+                      itemCount: _patterns.length,
+                      itemBuilder: (context, index) {
+                        final pattern = _patterns[index];
+                        final isSelected = _currentDemo == pattern.name;
+
+                        return Card(
+                          color: isSelected
+                              ? Colors.white.withValues(alpha: 0.3)
+                              : Colors.white.withValues(alpha: 0.1),
+                          child: ListTile(
+                            title: Text(
+                              pattern.name,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            subtitle: Text(
+                              pattern.category,
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                _currentDemo = pattern.name;
+                              });
+                              _runPatternDemo(pattern);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // Demo Content Area
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: _currentDemo == 'Welcome'
+                          ? _buildWelcomeContent()
+                          : _buildPatternContent(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Build language selector dropdown
+  /// 
+  /// PATTERN: Observer - Changes automatically trigger UI updates
+  Widget _buildLanguageSelector() {
+    if (!LocalizationHelpers.isInitialized) {
+      return const SizedBox.shrink();
+    }
+
+    final currentLanguage = LocalizationHelpers.currentLanguage;
+    final supportedLanguages = LocalizationHelpers.supportedLanguages;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 16.0),
+      child: DropdownButton<Language>(
+        value: currentLanguage,
+        icon: const Icon(Icons.language, color: Colors.white),
+        dropdownColor: const Color(0xFF2E8B57),
+        underline: Container(),
+        items: supportedLanguages.map((Language language) {
+          return DropdownMenuItem<Language>(
+            value: language,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  language.flag,
+                  style: const TextStyle(fontSize: 18),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  language.name,
+                  style: const TextStyle(
                     color: Colors.white,
+                    fontSize: 14,
                   ),
                 ),
-              ),
-              // Content
-              Expanded(
-                child: Row(
-                  children: [
-                    // Pattern List Sidebar
-                    Container(
-                      width: 250,
-                      margin: const EdgeInsets.all(16),
-                      child: ListView.builder(
-                        itemCount: _patterns.length,
-                        itemBuilder: (context, index) {
-                          final pattern = _patterns[index];
-                          final isSelected = _currentDemo == pattern.name;
+              ],
+            ),
+          );
+        }).toList(),
+        onChanged: (Language? newLanguage) async {
+          if (newLanguage != null && newLanguage != currentLanguage) {
+            Log.debug('User selected language: ${newLanguage.code}');
 
-                          return Card(
-                            color: isSelected
-                                ? Colors.white.withValues(alpha: 0.3)
-                                : Colors.white.withValues(alpha: 0.1),
-                            child: ListTile(
-                              title: Text(
-                                pattern.name,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                              subtitle: Text(
-                                pattern.category,
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  _currentDemo = pattern.name;
-                                });
-                                _runPatternDemo(pattern);
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    // Demo Content Area
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.all(16),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: _currentDemo == 'Welcome'
-                            ? _buildWelcomeContent()
-                            : _buildPatternContent(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+            // PATTERN: Observer - Language change will automatically trigger UI updates
+            final success = await LocalizationHelpers.changeLanguage(
+                newLanguage);
+
+            if (success) {
+              Log.success(
+                  'Language changed successfully to ${newLanguage.code}');
+
+              // Show confirmation snackbar
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(tr('language_changed')),
+                    backgroundColor: const Color(0xFF2E8B57),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+            } else {
+              Log.error('Failed to change language to ${newLanguage.code}');
+            }
+          }
+        },
       ),
     );
   }
@@ -218,9 +334,11 @@ class _PatternDemoPageState extends State<PatternDemoPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Welcome to Design Patterns Learning Platform',
-          style: TextStyle(
+        Text(
+          LocalizationHelpers.isInitialized
+              ? tr('app_subtitle')
+              : 'Welcome to Design Patterns Learning Platform',
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -228,7 +346,9 @@ class _PatternDemoPageState extends State<PatternDemoPage> {
         ),
         const SizedBox(height: 16),
         Text(
-          'This app demonstrates design patterns using a Tower Defense game context. '
+          LocalizationHelpers.isInitialized
+              ? trArgs('creational_desc', {}) // Using fallback for now
+              : 'This app demonstrates design patterns using a Tower Defense game context. '
               'Each pattern is implemented with practical examples.',
           style: TextStyle(
             fontSize: 16,
@@ -236,14 +356,42 @@ class _PatternDemoPageState extends State<PatternDemoPage> {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          '← Select a pattern from the sidebar to see its implementation.',
-          style: TextStyle(
+        Text(
+          LocalizationHelpers.isInitialized
+              ? tr('help')
+              : '← Select a pattern from the sidebar to see its implementation.',
+          style: const TextStyle(
             fontSize: 14,
             color: Colors.white70,
             fontStyle: FontStyle.italic,
           ),
         ),
+
+        // PATTERN: Observer - Show language change status
+        if (LocalizationHelpers.isInitialized) ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.language, color: Colors.white70, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  '${tr('language')}: ${LocalizationHelpers.currentLanguage
+                      .name}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
