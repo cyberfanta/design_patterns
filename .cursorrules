@@ -116,18 +116,19 @@ test/
 ## Restricciones de IA
 - **PROHIBIDO**: La IA NO puede usar comandos Git directamente
 - **OBLIGATORIO**: Para borrar archivos o rollback, solicitar apoyo al usuario
-- **REFERENCIA**: Ver comandos disponibles en `git_commands.md`
+- **REFERENCIA**: Ver comandos disponibles en `docs/git_commands.md`
 
-## Documentación y Diagramas
+## Estructura de Documentación
+- **OBLIGATORIO**: Todos los archivos .md van en carpeta `/docs/`
 - **OBLIGATORIO**: Usar formato `///` para documentación generativa
 - **OBLIGATORIO**: Documentar cada clase pública con propósito y patrón usado
-- **REFERENCIA**: Herramientas y comandos en `documentation_tools.md`
+- **REFERENCIA**: Herramientas y comandos en `docs/documentation_tools.md`
 - **OBLIGATORIO**: Crear diagramas UML con PlantUML para patrones implementados
 
 ## Configuración y Persistencia
 - **OBLIGATORIO**: Configuración del sistema con SQLite local (mínimo: idioma)
 - **OBLIGATORIO**: Usar patrones Memento + Repository para configuración
-- **OBLIGATORIO**: Perfil de usuario en Firebase (ver `firebase_setup.md`)
+- **OBLIGATORIO**: Perfil de usuario en Firebase (ver `docs/firebase_setup.md`)
 - **OBLIGATORIO**: Usar patrones Proxy + Memento + Observer para perfil
 
 ## Seguridad
@@ -200,23 +201,40 @@ test/
   - Authentication (Email/Password, Google, Apple)
   - Firestore Database (user profiles, app config)
   - Storage (profile images)
-  - Analytics (ver plan detallado en `firebase_analytics_plan.md`)
+  - Analytics (ver plan detallado en `docs/firebase_analytics_plan.md`)
   - Performance Monitoring
   - App Check (security)
   - Crashlytics (error reporting)
 
 ## Referencias Obligatorias
-- **Reglas de negocio**: `design_patterns_rules.md`
-- **Herramientas de documentación**: `documentation_tools.md`
-- **Comandos Git**: `git_commands.md`
-- **Configuración Firebase**: `firebase_setup.md`
-- **Plan de Analytics**: `firebase_analytics_plan.md`
-- **CI/CD Strategy**: `ci_cd_proposal.md`
+- **Reglas de negocio**: `docs/design_patterns_rules.md`
+- **Herramientas de documentación**: `docs/documentation_tools.md`
+- **Comandos Git**: `docs/git_commands.md`
+- **Configuración Firebase**: `docs/firebase_setup.md`
+- **Plan de Analytics**: `docs/firebase_analytics_plan.md`
+- **CI/CD Strategy**: `docs/ci_cd_proposal.md`
+- **Certificados y SHA-1**: `docs/certificates_and_signing.md`
 - **Project Overview**: `README.md`
-- **Legal Documents**: `legal_documents.md`
+- **Legal Documents**: `docs/legal_documents.md`
 
 ## Documentación
 - Cada patrón de diseño implementado debe tener comentarios explicativos
 - README.md debe documentar la arquitectura y patrones utilizados  
 - Ejemplos de uso en cada capa principal
-- Seguir estructura y reglas definidas en archivos MD de referencia
+- Seguir estructura y reglas definidas en archivos MD de referencia en `/docs/`
+
+## Estructura de Carpetas de Documentación
+```
+docs/
+├── design_patterns_rules.md          # Reglas y matriz de patrones
+├── documentation_tools.md            # PlantUML y herramientas
+├── git_commands.md                   # Scripts y comandos Git
+├── firebase_setup.md                 # Configuración Firebase
+├── firebase_analytics_plan.md        # Plan de Analytics
+├── ci_cd_proposal.md                 # Estrategia CI/CD
+├── certificates_and_signing.md       # SHA-1 y certificados
+├── legal_documents.md                # Políticas y términos
+├── diagrams/                         # Archivos .puml fuente
+├── generated/                        # Diagramas generados
+└── api/                              # Documentación Dart generada
+```
