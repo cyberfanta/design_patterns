@@ -146,6 +146,7 @@ Pattern Categories Hub
 ### **Reference Files**
 - [`design_patterns_rules.md`](docs/design_patterns_rules.md) - Implementation rules and pattern matrix
 - [`documentation_tools.md`](docs/documentation_tools.md) - PlantUML and documentation tools
+- [`dependencies_mapping.md`](docs/dependencies_mapping.md) - Complete library usage map and integration guide
 - [`firebase_setup.md`](docs/firebase_setup.md) - Firebase configuration guide
 - [`firebase_analytics_plan.md`](docs/firebase_analytics_plan.md) - Analytics implementation plan
 - [`git_commands.md`](docs/git_commands.md) - Git workflow and scripts
