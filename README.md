@@ -1,6 +1,6 @@
 # 🎮 Design Patterns Flutter App - Tower Defense Learning Platform
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.19+-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Flutter](https://img.shields.io/badge/Flutter-3.32.4-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
@@ -259,11 +259,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## ☕ **SUPPORT THE PROJECT**
 
-Si te gustó esta app, puedes invitarme un café. Tu apoyo me ayuda a seguir creando. No es necesario, pero se agradece mucho.
+If you enjoyed this app, feel free to buy me a coffee. Your support helps me keep creating. It’s not required, but it’s deeply appreciated.
 
 **[Buy me a coffee ☕](https://buymeacoffee.com/cyberfanta)**
 
-*Esta donación es voluntaria y no implica contraprestación.*
+*This donation is voluntary and does not imply any compensation or exchange of services.*
 
 ---
 
