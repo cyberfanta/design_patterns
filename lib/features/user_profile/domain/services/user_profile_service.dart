@@ -6,6 +6,8 @@
 /// WHY: Ensures single source of truth for user profile across the app
 library;
 
+import 'dart:async';
+
 import 'package:design_patterns/core/logging/logging.dart';
 import 'package:design_patterns/core/patterns/behavioral/memento.dart';
 import 'package:design_patterns/core/patterns/behavioral/observer.dart'
@@ -42,6 +44,12 @@ class UserProfileService extends core_observer.Subject<GameEvent>
 
   // Observer pattern - list of components listening for profile changes
   final List<core_observer.Observer<GameEvent>> _observers = [];
+
+  // Stream controllers for reactive programming
+  final StreamController<AuthenticationState> _authStateController =
+      StreamController<AuthenticationState>.broadcast();
+  final StreamController<ProfileChangeEvent> _profileChangeController =
+      StreamController<ProfileChangeEvent>.broadcast();
 
   // Current state
   UserProfile? _currentProfile;
@@ -82,6 +90,13 @@ class UserProfileService extends core_observer.Subject<GameEvent>
   double get winRate => _currentProfile?.winRate ?? 0.0;
 
   bool get profileComplete => _currentProfile?.isComplete ?? false;
+
+  // Stream getters for reactive programming
+  Stream<AuthenticationState> get authStateChanges =>
+      _authStateController.stream;
+
+  Stream<ProfileChangeEvent> get profileChanges =>
+      _profileChangeController.stream;
 
   /// Initialize the user profile service with use cases
   void initialize({
@@ -443,6 +458,9 @@ class UserProfileService extends core_observer.Subject<GameEvent>
       _authState = state;
       Log.debug('Auth state changed: $oldState -> $state');
 
+      // Emit to auth state stream
+      _authStateController.add(state);
+
       // Notify observers of auth state change
       _notifyProfileChange(
         oldState == AuthenticationState.authenticated ? _currentProfile : null,
@@ -477,6 +495,9 @@ class UserProfileService extends core_observer.Subject<GameEvent>
       changeType: changeType,
       timestamp: DateTime.now(),
     );
+
+    // Emit to profile changes stream
+    _profileChangeController.add(event);
 
     // Convert to GameEvent and notify observers
     final gameEvent = GameEvent(
@@ -626,6 +647,32 @@ class UserProfileService extends core_observer.Subject<GameEvent>
       updateProfile(updatedProfile);
     } catch (e) {
       Log.error('Error updating game stats: $e');
+    }
+  }
+
+  /// Public method to update game progress (for provider compatibility)
+  Future<void> updateGameProgress({
+    int? gamesPlayed,
+    int? gamesWon,
+    int? gameLevel,
+  }) async {
+    if (_currentProfile == null) {
+      Log.warning('Cannot update game progress - user not signed in');
+      return;
+    }
+
+    try {
+      Log.debug('Updating game progress for user: ${_currentProfile!.uid}');
+
+      final updatedProfile = _currentProfile!.updateGameProgress(
+        gamesPlayed: gamesPlayed ?? _currentProfile!.gamesPlayed,
+        gamesWon: gamesWon ?? _currentProfile!.gamesWon,
+        gameLevel: gameLevel ?? _currentProfile!.gameLevel,
+      );
+
+      await updateProfile(updatedProfile);
+    } catch (e) {
+      Log.error('Error updating game progress: $e');
     }
   }
 
