@@ -67,8 +67,9 @@ class PasswordValidationStrategy implements ValidationStrategy {
   @override
   String? validate(String text) {
     if (text.isEmpty) return 'Password is required';
-    if (text.length < minLength)
+    if (text.length < minLength) {
       return 'Password must be at least $minLength characters';
+    }
     if (requireSpecialChars &&
         !RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(text)) {
       return 'Password must contain special characters';
@@ -96,10 +97,12 @@ class UsernameValidationStrategy implements ValidationStrategy {
   @override
   String? validate(String text) {
     if (text.isEmpty) return 'Username is required';
-    if (text.length < minLength)
+    if (text.length < minLength) {
       return 'Username must be at least $minLength characters';
-    if (text.length > maxLength)
+    }
+    if (text.length > maxLength) {
       return 'Username cannot exceed $maxLength characters';
+    }
     if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(text)) {
       return 'Username can only contain letters, numbers, and underscores';
     }
