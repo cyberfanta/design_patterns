@@ -270,10 +270,16 @@ class _PatternDemoPageState extends State<PatternDemoPage>
     final currentLanguage = LocalizationHelpers.currentLanguage;
     final supportedLanguages = LocalizationHelpers.supportedLanguages;
 
+    // PATTERN: Strategy - Find matching language by code to avoid instance comparison issues
+    final selectedLanguage = supportedLanguages.firstWhere(
+          (lang) => lang.code == currentLanguage.code,
+      orElse: () => Language.english, // Fallback to English if not found
+    );
+
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
       child: DropdownButton<Language>(
-        value: currentLanguage,
+        value: selectedLanguage,
         icon: const Icon(Icons.language, color: Colors.white),
         dropdownColor: const Color(0xFF2E8B57),
         underline: Container(),
@@ -300,7 +306,7 @@ class _PatternDemoPageState extends State<PatternDemoPage>
           );
         }).toList(),
         onChanged: (Language? newLanguage) async {
-          if (newLanguage != null && newLanguage != currentLanguage) {
+          if (newLanguage != null && newLanguage.code != currentLanguage.code) {
             Log.debug('User selected language: ${newLanguage.code}');
 
             // PATTERN: Observer - Language change will automatically trigger UI updates
