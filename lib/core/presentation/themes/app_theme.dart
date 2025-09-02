@@ -166,4 +166,9 @@ class AppTheme {
   static const double radiusM = 12.0;
   static const double radiusL = 16.0;
   static const double radiusXL = 24.0;
+
+  // Text colors (based on light theme - will be overridden by context in dark theme)
+  static const Color textPrimary = Color(0xFF1C1C1C);
+  static const Color textSecondary = Color(0xFF79747E);
+  static const Color primaryColor = Color(0xFF4CAF50);
 }
