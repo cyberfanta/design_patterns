@@ -10,8 +10,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:design_patterns/core/logging/logging.dart';
-import 'package:design_patterns/features/localization/data/datasources/embedded_translations_datasource.dart';
-import 'package:design_patterns/features/localization/data/datasources/local_translation_datasource.dart';
+import 'package:design_patterns/features/localization/data/data_sources/embedded_translations_datasource.dart';
+import 'package:design_patterns/features/localization/data/data_sources/local_translation_datasource.dart';
 import 'package:design_patterns/features/localization/data/models/language_model.dart';
 import 'package:design_patterns/features/localization/data/models/translation_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';

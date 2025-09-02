@@ -10,9 +10,9 @@ import 'package:design_patterns/core/logging/logging.dart';
 import 'package:design_patterns/core/patterns/behavioral/memento.dart';
 import 'package:design_patterns/core/patterns/behavioral/observer.dart';
 import 'package:design_patterns/features/configuration/domain/entities/app_config.dart';
-import 'package:design_patterns/features/configuration/domain/usecases/get_config.dart';
-import 'package:design_patterns/features/configuration/domain/usecases/reset_config.dart';
-import 'package:design_patterns/features/configuration/domain/usecases/save_config.dart';
+import 'package:design_patterns/features/configuration/domain/use_cases/get_config.dart';
+import 'package:design_patterns/features/configuration/domain/use_cases/reset_config.dart';
+import 'package:design_patterns/features/configuration/domain/use_cases/save_config.dart';
 
 /// Configuration service implementing multiple design patterns
 ///
@@ -406,20 +406,26 @@ class ConfigChangeEvent {
   List<String> get changedKeys {
     final changes = <String>[];
 
-    if (oldConfig.languageCode != newConfig.languageCode)
+    if (oldConfig.languageCode != newConfig.languageCode) {
       changes.add('languageCode');
+    }
     if (oldConfig.themeMode != newConfig.themeMode) changes.add('themeMode');
-    if (oldConfig.soundEnabled != newConfig.soundEnabled)
+    if (oldConfig.soundEnabled != newConfig.soundEnabled) {
       changes.add('soundEnabled');
-    if (oldConfig.musicEnabled != newConfig.musicEnabled)
+    }
+    if (oldConfig.musicEnabled != newConfig.musicEnabled) {
       changes.add('musicEnabled');
+    }
     if (oldConfig.volume != newConfig.volume) changes.add('volume');
-    if (oldConfig.difficultyLevel != newConfig.difficultyLevel)
+    if (oldConfig.difficultyLevel != newConfig.difficultyLevel) {
       changes.add('difficultyLevel');
-    if (oldConfig.showTutorial != newConfig.showTutorial)
+    }
+    if (oldConfig.showTutorial != newConfig.showTutorial) {
       changes.add('showTutorial');
-    if (oldConfig.analyticsEnabled != newConfig.analyticsEnabled)
+    }
+    if (oldConfig.analyticsEnabled != newConfig.analyticsEnabled) {
       changes.add('analyticsEnabled');
+    }
     if (oldConfig.isFirstRun != newConfig.isFirstRun) changes.add('isFirstRun');
 
     return changes;

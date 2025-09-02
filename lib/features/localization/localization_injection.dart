@@ -8,15 +8,15 @@ library;
 
 import 'package:design_patterns/core/logging/logging.dart';
 import 'package:design_patterns/core/patterns/behavioral/observer.dart';
-import 'package:design_patterns/features/localization/data/datasources/embedded_translations_datasource.dart';
-import 'package:design_patterns/features/localization/data/datasources/local_translation_datasource.dart';
-import 'package:design_patterns/features/localization/data/datasources/shared_preferences_datasource.dart';
+import 'package:design_patterns/features/localization/data/data_sources/embedded_translations_datasource.dart';
+import 'package:design_patterns/features/localization/data/data_sources/local_translation_datasource.dart';
+import 'package:design_patterns/features/localization/data/data_sources/shared_preferences_datasource.dart';
 import 'package:design_patterns/features/localization/data/repositories/translation_repository_impl.dart';
 import 'package:design_patterns/features/localization/domain/repositories/translation_repository.dart';
 import 'package:design_patterns/features/localization/domain/services/translation_service.dart';
-import 'package:design_patterns/features/localization/domain/usecases/change_language.dart';
-import 'package:design_patterns/features/localization/domain/usecases/get_current_language.dart';
-import 'package:design_patterns/features/localization/domain/usecases/load_translations.dart';
+import 'package:design_patterns/features/localization/domain/use_cases/change_language.dart';
+import 'package:design_patterns/features/localization/domain/use_cases/get_current_language.dart';
+import 'package:design_patterns/features/localization/domain/use_cases/load_translations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

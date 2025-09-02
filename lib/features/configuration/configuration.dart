@@ -19,6 +19,6 @@ export 'domain/repositories/config_repository.dart';
 // Domain Services (Singleton + Observer + Memento)
 export 'domain/services/config_service.dart';
 // Domain Use Cases
-export 'domain/usecases/get_config.dart';
-export 'domain/usecases/reset_config.dart';
-export 'domain/usecases/save_config.dart';
+export 'domain/use_cases/get_config.dart';
+export 'domain/use_cases/reset_config.dart';
+export 'domain/use_cases/save_config.dart';

@@ -9,7 +9,7 @@ library;
 import 'dart:io';
 
 import 'package:design_patterns/core/logging/logging.dart';
-import 'package:design_patterns/features/configuration/data/datasources/local_config_datasource.dart';
+import 'package:design_patterns/features/configuration/data/data_sources/local_config_datasource.dart';
 import 'package:design_patterns/features/configuration/data/models/app_config_model.dart';
 import 'package:sqflite/sqflite.dart';
 // Using path from sqflite package

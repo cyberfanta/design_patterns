@@ -8,7 +8,7 @@ library;
 
 import 'package:design_patterns/core/error/failures.dart';
 import 'package:design_patterns/core/logging/logging.dart';
-import 'package:design_patterns/features/configuration/data/datasources/local_config_datasource.dart';
+import 'package:design_patterns/features/configuration/data/data_sources/local_config_datasource.dart';
 import 'package:design_patterns/features/configuration/data/models/app_config_model.dart';
 import 'package:design_patterns/features/configuration/domain/entities/app_config.dart';
 import 'package:design_patterns/features/configuration/domain/repositories/config_repository.dart';

@@ -16,10 +16,10 @@ export 'domain/entities/translation.dart';
 export 'domain/repositories/translation_repository.dart';
 // Domain Services (Singleton + Observer + Memento)
 export 'domain/services/translation_service.dart';
-export 'domain/usecases/change_language.dart';
+export 'domain/use_cases/change_language.dart';
 // Domain Use Cases
-export 'domain/usecases/get_current_language.dart';
-export 'domain/usecases/load_translations.dart';
+export 'domain/use_cases/get_current_language.dart';
+export 'domain/use_cases/load_translations.dart';
 // Public convenience methods for easy access
 export 'localization_helpers.dart';
 // Dependency Injection

@@ -11,9 +11,9 @@ import 'package:design_patterns/core/patterns/behavioral/memento.dart';
 import 'package:design_patterns/core/patterns/behavioral/observer.dart';
 import 'package:design_patterns/features/localization/domain/entities/language.dart';
 import 'package:design_patterns/features/localization/domain/entities/translation.dart';
-import 'package:design_patterns/features/localization/domain/usecases/change_language.dart';
-import 'package:design_patterns/features/localization/domain/usecases/get_current_language.dart';
-import 'package:design_patterns/features/localization/domain/usecases/load_translations.dart';
+import 'package:design_patterns/features/localization/domain/use_cases/change_language.dart';
+import 'package:design_patterns/features/localization/domain/use_cases/get_current_language.dart';
+import 'package:design_patterns/features/localization/domain/use_cases/load_translations.dart';
 
 /// Translation service implementing multiple design patterns
 ///

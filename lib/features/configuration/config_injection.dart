@@ -7,14 +7,14 @@
 library;
 
 import 'package:design_patterns/core/logging/logging.dart';
-import 'package:design_patterns/features/configuration/data/datasources/local_config_datasource.dart';
-import 'package:design_patterns/features/configuration/data/datasources/sqlite_config_datasource.dart';
+import 'package:design_patterns/features/configuration/data/data_sources/local_config_datasource.dart';
+import 'package:design_patterns/features/configuration/data/data_sources/sqlite_config_datasource.dart';
 import 'package:design_patterns/features/configuration/data/repositories/config_repository_impl.dart';
 import 'package:design_patterns/features/configuration/domain/repositories/config_repository.dart';
 import 'package:design_patterns/features/configuration/domain/services/config_service.dart';
-import 'package:design_patterns/features/configuration/domain/usecases/get_config.dart';
-import 'package:design_patterns/features/configuration/domain/usecases/reset_config.dart';
-import 'package:design_patterns/features/configuration/domain/usecases/save_config.dart';
+import 'package:design_patterns/features/configuration/domain/use_cases/get_config.dart';
+import 'package:design_patterns/features/configuration/domain/use_cases/reset_config.dart';
+import 'package:design_patterns/features/configuration/domain/use_cases/save_config.dart';
 import 'package:get_it/get_it.dart';
 
 /// Configuration dependency injection setup

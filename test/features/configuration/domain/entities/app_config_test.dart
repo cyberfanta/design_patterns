@@ -1,4 +1,6 @@
 /// App Configuration Entity Tests
+library;
+
 import 'package:design_patterns/features/configuration/domain/entities/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 

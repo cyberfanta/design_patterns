@@ -8,7 +8,7 @@ library;
 
 import 'package:design_patterns/core/error/failures.dart';
 import 'package:design_patterns/core/logging/logging.dart';
-import 'package:design_patterns/features/localization/data/datasources/local_translation_datasource.dart';
+import 'package:design_patterns/features/localization/data/data_sources/local_translation_datasource.dart';
 import 'package:design_patterns/features/localization/data/models/language_model.dart';
 import 'package:design_patterns/features/localization/data/models/translation_model.dart';
 import 'package:design_patterns/features/localization/domain/entities/language.dart';
