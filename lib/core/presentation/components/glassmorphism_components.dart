@@ -9,6 +9,7 @@ library;
 import '../../logging/console_logger.dart';
 
 export 'glass_bottom_sheet.dart';
+export 'glass_code_viewer.dart';
 // Core glassmorphism components
 export 'glass_container.dart';
 // Advanced glassmorphism components
@@ -17,6 +18,7 @@ export 'glass_loader.dart';
 export 'glass_text_field.dart';
 export 'glass_toast.dart';
 export 'mesh_gradient_background.dart';
+export 'pattern_code_examples.dart';
 
 /// Glassmorphism Components Facade
 ///
@@ -50,12 +52,18 @@ class GlassmorphismComponents {
       'GlassOverlayLoader',
       'GlassTowerDefenseLoaders',
     ],
+    'Code Display': [
+      'GlassCodeViewer',
+      'PatternCodeExample',
+      'PatternCodeBrowser',
+      'CodeStrategyFactory',
+    ],
   };
 
   /// Design patterns implemented across components
   static const Map<String, List<String>> implementedPatterns = {
     'Creational Patterns': [
-      'Factory Method - GlassContainer.card(), GlassTextField.email()',
+      'Factory Method - GlassContainer.card(), GlassTextField.email(), CodeStrategyFactory',
       'Builder - GlassLoaderBuilder for configurable loaders',
       'Singleton - GlassToastManager for global toast management',
     ],
@@ -65,9 +73,9 @@ class GlassmorphismComponents {
       'Composite - Complex components combine multiple glass elements',
     ],
     'Behavioral Patterns': [
-      'Template Method - GlassDialog defines structure with customizable steps',
-      'Strategy - BottomSheetStrategy for different presentation approaches',
-      'Observer - TextFieldObserver for reactive input validation',
+      'Template Method - GlassDialog defines structure, PatternExample structure',
+      'Strategy - BottomSheetStrategy, CodeGenerationStrategy for multi-language support',
+      'Observer - TextFieldObserver for reactive input validation, CodeViewerObserver',
       'State - LoadingState management in GlassLoader',
     ],
   };
@@ -76,6 +84,8 @@ class GlassmorphismComponents {
   static const List<String> towerDefenseComponents = [
     'GlassTowerDefenseToast - Game-specific notifications',
     'GlassTowerDefenseLoaders - Game state loading indicators',
+    'PatternCodeExample - Tower Defense context code examples',
+    'Multi-language code generation with Tower Defense examples',
     'Context-aware styling for battlefield UI elements',
     'Translucent panels maintaining game visibility',
   ];
@@ -115,6 +125,26 @@ GlassTextField.email(
 GlassLoader.spinner(
   message: 'Loading wave data...',
   state: LoadingState.loading,
+)''',
+
+    'Code Example Display': '''
+PatternCodeExample(
+  patternName: 'singleton',
+  initialLanguage: CodeLanguage.dart,
+  showPatternInfo: true,
+)''',
+
+    'Multi-language Code Viewer': '''
+GlassCodeViewer(
+  patternName: 'Factory',
+  context: {'className': 'TowerFactory'},
+  initiallyExpanded: true,
+)''',
+
+    'Pattern Browser': '''
+PatternCodeBrowser(
+  initialCategory: PatternCategory.creational,
+  onPatternSelected: (pattern) => showPattern(pattern),
 )''',
   };
 
