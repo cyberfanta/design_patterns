@@ -2,24 +2,29 @@
 ///
 /// PATTERN: Model-View-ViewModel-Coordinator (MVVM-C) with GetX for state management
 /// WHERE: Design Patterns feature - Behavioral category presentation
-/// HOW: Displays behavioral patterns using Grid Layout as alternative design
-/// WHY: Demonstrates communication patterns with interactive grid-based UI
+/// HOW: Displays behavioral patterns using Interactive Dashboard as alternative design
+/// WHY: Demonstrates communication patterns with innovative, multi-modal UI
 library;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/presentation/components/glass_container.dart';
+import '../../../../core/presentation/components/glass_floating_action_button.dart' as gfab;
 import '../../../../core/presentation/components/mesh_gradient_background.dart';
 import '../../../../core/presentation/themes/app_theme.dart';
 import '../controllers/behavioral_patterns_controller.dart';
 import '../cubits/creational_patterns_state.dart' show PatternInfo;
-import '../widgets/pattern_list_item.dart';
+import '../models/behavioral_pattern_info.dart';
+import '../widgets/behavioral_constellation_view.dart';
+import '../widgets/behavioral_dashboard_card.dart';
 
 /// Behavioral patterns page using MVVM-C architecture with GetX.
 ///
-/// Implements Grid Layout as the alternative design (not tabs, not PageView)
-/// for behavioral patterns, demonstrating communication patterns in Tower Defense.
+/// Implements Interactive Dashboard with multiple visualization modes:
+/// - Dashboard View: Interactive cards with animations and detailed information
+/// - Constellation View: Space-themed pattern exploration
+/// - List View: Traditional linear pattern display
 class BehavioralPatternsPage extends StatelessWidget {
   const BehavioralPatternsPage({super.key});
 
@@ -52,22 +57,14 @@ class BehavioralPatternsPage extends StatelessWidget {
               child: _buildFilters(context, controller),
             ),
 
-            // Main content - Grid Layout (alternative design)
+            // Main content - Dynamic view based on selected mode
             Expanded(child: Obx(() => _buildContent(context, controller))),
           ],
         ),
 
-        // Floating filter button
+        // Multi-function floating action button
         floatingActionButton: Obx(
-          () => controller.isFilterActive.value
-              ? GlassFloatingActionButton(
-                  onPressed: () => controller.clearFilters(),
-                  child: const Icon(Icons.clear, color: Colors.white),
-                )
-              : GlassFloatingActionButton(
-                  onPressed: () => controller.showFilterDialog(),
-                  child: const Icon(Icons.filter_list, color: Colors.white),
-                ),
+              () => _buildFloatingActionButton(controller),
         ),
       ),
     );
@@ -113,17 +110,58 @@ class BehavioralPatternsPage extends StatelessWidget {
           ),
         ),
 
-        // View toggle
+        // View mode selector
         Obx(
-          () => GlassContainer.button(
-            onTap: () => controller.toggleViewMode(),
-            child: Icon(
-              controller.isGridView.value ? Icons.list : Icons.grid_view,
-              color: Colors.white,
-            ),
-          ),
+              () =>
+              Row(
+                children: [
+                  _buildViewModeButton(
+                    icon: Icons.dashboard_customize,
+                    isSelected: controller.viewMode.value == ViewMode.dashboard,
+                    onTap: () => controller.setViewMode(ViewMode.dashboard),
+                  ),
+                  const SizedBox(width: AppTheme.spacingS),
+                  _buildViewModeButton(
+                    icon: Icons.stars,
+                    isSelected: controller.viewMode.value ==
+                        ViewMode.constellation,
+                    onTap: () => controller.setViewMode(ViewMode.constellation),
+                  ),
+                  const SizedBox(width: AppTheme.spacingS),
+                  _buildViewModeButton(
+                    icon: Icons.list,
+                    isSelected: controller.viewMode.value == ViewMode.list,
+                    onTap: () => controller.setViewMode(ViewMode.list),
+                  ),
+                ],
+              ),
         ),
       ],
+    );
+  }
+
+  Widget _buildViewModeButton({
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GlassContainer.button(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: isSelected
+            ? BoxDecoration(
+          borderRadius: BorderRadius.circular(AppTheme.radiusS),
+          color: Colors.white.withValues(alpha: 0.2),
+        )
+            : null,
+        child: Icon(
+          icon,
+          color: isSelected ? Colors.white : Colors.white.withValues(
+              alpha: 0.6),
+          size: 20,
+        ),
+      ),
     );
   }
 
@@ -132,60 +170,94 @@ class BehavioralPatternsPage extends StatelessWidget {
     BuildContext context,
     BehavioralPatternsController controller,
   ) {
-    return GlassContainer(
-      padding: const EdgeInsets.all(AppTheme.spacingM),
-      child: Column(
-        children: [
-          // Search bar
-          GlassContainer(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingM,
-              vertical: AppTheme.spacingS,
-            ),
-            child: TextField(
-              onChanged: (value) => controller.searchPatterns(value),
+    return Obx(() {
+      // Hide filters in constellation view for immersion
+      if (controller.viewMode.value == ViewMode.constellation) {
+        return const SizedBox.shrink();
+      }
+
+      return GlassContainer(
+        padding: const EdgeInsets.all(AppTheme.spacingM),
+        child: Column(
+          children: [
+            // Search bar
+            TextField(
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Search patterns...',
+                hintText: 'Search behavioral patterns...',
                 hintStyle: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
-                ),
+                    color: Colors.white.withValues(alpha: 0.5)),
                 prefixIcon: Icon(
                   Icons.search,
                   color: Colors.white.withValues(alpha: 0.7),
                 ),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                  borderSide: BorderSide(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .primary,
+                  ),
+                ),
               ),
+              onChanged: controller.searchPatterns,
             ),
-          ),
 
-          const SizedBox(height: AppTheme.spacingM),
+            const SizedBox(height: AppTheme.spacingM),
 
-          // Difficulty filter chips
-          Obx(
-            () => Wrap(
-              spacing: AppTheme.spacingS,
-              children: ['All', 'Beginner', 'Intermediate', 'Advanced']
-                  .map(
-                    (difficulty) => _buildFilterChip(
-                      context,
-                      controller,
-                      difficulty,
-                      controller.selectedDifficulty.value == difficulty,
+            // Difficulty filters
+            Row(
+              children: [
+                Text(
+                  'Difficulty:',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: AppTheme.spacingM),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: ['All', 'Beginner', 'Intermediate', 'Advanced']
+                          .map((difficulty) =>
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                right: AppTheme.spacingS),
+                            child: _buildDifficultyChip(
+                              context,
+                              controller,
+                              difficulty,
+                              controller.selectedDifficulty.value == difficulty,
+                            ),
+                          ))
+                          .toList(),
                     ),
-                  )
-                  .toList(),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
-  /// Build filter chip
-  Widget _buildFilterChip(
+  Widget _buildDifficultyChip(
     BuildContext context,
     BehavioralPatternsController controller,
     String difficulty,
@@ -230,7 +302,9 @@ class BehavioralPatternsPage extends StatelessWidget {
     BehavioralPatternsController controller,
   ) {
     if (controller.isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      );
     }
 
     if (controller.hasError.value) {
@@ -243,227 +317,129 @@ class BehavioralPatternsPage extends StatelessWidget {
       return _buildEmptyView(context, controller);
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(AppTheme.spacingL),
-      child: controller.isGridView.value
-          ? _buildGridView(context, controller, patterns)
-          : _buildListView(context, controller, patterns),
-    );
+    // Route to different view modes
+    switch (controller.viewMode.value) {
+      case ViewMode.dashboard:
+        return _buildDashboardView(context, controller, patterns);
+      case ViewMode.constellation:
+        return BehavioralConstellationView(controller: controller);
+      case ViewMode.list:
+        return _buildListView(context, controller, patterns);
+    }
   }
 
-  /// Build grid view (alternative design for behavioral patterns)
-  Widget _buildGridView(
+  /// Build innovative dashboard view with interactive cards
+  Widget _buildDashboardView(
     BuildContext context,
     BehavioralPatternsController controller,
     List<BehavioralPatternInfo> patterns,
   ) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppTheme.spacingM,
-        mainAxisSpacing: AppTheme.spacingM,
-        childAspectRatio: 0.8,
+    return Padding(
+      padding: const EdgeInsets.all(AppTheme.spacingL),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: AppTheme.spacingM,
+          mainAxisSpacing: AppTheme.spacingM,
+          childAspectRatio: 0.75,
+        ),
+        itemCount: patterns.length,
+        itemBuilder: (context, index) {
+          final pattern = patterns[index];
+          return BehavioralDashboardCard(
+            pattern: pattern,
+            index: index,
+            controller: controller,
+            onTap: () => controller.navigateToPattern(pattern),
+            onFavoriteToggle: () => controller.toggleFavorite(pattern),
+            isFavorite: controller.favoritePatterns.contains(pattern),
+          );
+        },
       ),
-      itemCount: patterns.length,
-      itemBuilder: (context, index) {
-        final pattern = patterns[index];
-        return _buildGridPatternCard(context, controller, pattern);
-      },
     );
   }
 
-  /// Build list view
+  /// Build traditional list view
   Widget _buildListView(
     BuildContext context,
     BehavioralPatternsController controller,
     List<BehavioralPatternInfo> patterns,
   ) {
-    return ListView.builder(
-      itemCount: patterns.length,
-      itemBuilder: (context, index) {
-        final pattern = patterns[index];
-        return PatternListItemCompact(
-          pattern: PatternInfo(
-            name: pattern.name,
-            description: pattern.description,
-            difficulty: pattern.difficulty,
-            category: pattern.category,
-            keyBenefits: pattern.keyBenefits,
-            useCases: pattern.useCases,
-            relatedPatterns: pattern.relatedPatterns,
-            towerDefenseExample: pattern.towerDefenseExample,
-            complexity: pattern.complexity,
-            isPopular: pattern.isPopular,
-          ),
-          onTap: () => controller.navigateToPattern(pattern),
-          isFavorite: controller.favoritePatterns.contains(pattern),
-        );
-      },
-    );
-  }
-
-  /// Build grid pattern card
-  Widget _buildGridPatternCard(
-    BuildContext context,
-    BehavioralPatternsController controller,
-    BehavioralPatternInfo pattern,
-  ) {
-    return GlassContainer.card(
-      onTap: () => controller.navigateToPattern(pattern),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with icon and favorite
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primaryContainer,
-                    ],
-                  ),
-                ),
-                child: Icon(pattern.icon, color: Colors.white, size: 20),
+    return Padding(
+      padding: const EdgeInsets.all(AppTheme.spacingL),
+      child: ListView.builder(
+        itemCount: patterns.length,
+        itemBuilder: (context, index) {
+          final pattern = patterns[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
+            child: PatternListItemCompact(
+              pattern: PatternInfo(
+                name: pattern.name,
+                description: pattern.description,
+                difficulty: pattern.difficulty,
+                category: pattern.category,
+                keyBenefits: pattern.keyBenefits,
+                useCases: pattern.useCases,
+                relatedPatterns: pattern.relatedPatterns,
+                towerDefenseExample: pattern.towerDefenseExample,
+                complexity: pattern.complexity,
+                isPopular: pattern.isPopular,
+                icon: pattern.icon,
+                towerDefenseContext: pattern.towerDefenseContext,
               ),
-
-              const Spacer(),
-
-              GestureDetector(
-                onTap: () => controller.toggleFavorite(pattern),
-                child: Icon(
-                  controller.favoritePatterns.contains(pattern)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: controller.favoritePatterns.contains(pattern)
-                      ? Colors.red
-                      : Colors.white.withValues(alpha: 0.5),
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: AppTheme.spacingL),
-
-          // Pattern name
-          Text(
-            pattern.name,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+              onTap: () => controller.navigateToPattern(pattern),
+              isFavorite: controller.favoritePatterns.contains(pattern),
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-
-          const SizedBox(height: AppTheme.spacingS),
-
-          // Difficulty badge
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingS,
-              vertical: 2,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppTheme.radiusS),
-              color: _getDifficultyColor(
-                pattern.difficulty,
-              ).withValues(alpha: 0.2),
-              border: Border.all(
-                color: _getDifficultyColor(
-                  pattern.difficulty,
-                ).withValues(alpha: 0.5),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              pattern.difficulty,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: _getDifficultyColor(pattern.difficulty),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: AppTheme.spacingM),
-
-          // Description
-          Expanded(
-            child: Text(
-              pattern.description,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white.withValues(alpha: 0.7),
-                height: 1.3,
-              ),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-
-          const SizedBox(height: AppTheme.spacingM),
-
-          // Communication type
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingS,
-              vertical: 2,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppTheme.radiusS),
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.2),
-            ),
-            child: Text(
-              pattern.communicationType,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 10,
-              ),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  /// Build error view
   Widget _buildErrorView(
     BuildContext context,
     BehavioralPatternsController controller,
   ) {
     return Center(
-      child: GlassContainer.panel(
+      child: GlassContainer(
+        padding: const EdgeInsets.all(AppTheme.spacingXL),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-
-            const SizedBox(height: AppTheme.spacingL),
-
-            Text(
-              'Error Loading Patterns',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: Colors.white),
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Colors.red.withValues(alpha: 0.8),
             ),
-
             const SizedBox(height: AppTheme.spacingL),
-
-            GlassContainer.button(
-              onTap: () => controller.loadPatterns(),
-              child: const Text(
-                'Retry',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            Text(
+              'Oops! Something went wrong',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            const SizedBox(height: AppTheme.spacingM),
+            Text(
+              'Failed to load behavioral patterns. Please try again.',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppTheme.spacingL),
+            ElevatedButton(
+              onPressed: controller.loadPatterns,
+              child: const Text('Retry'),
             ),
           ],
         ),
@@ -471,52 +447,47 @@ class BehavioralPatternsPage extends StatelessWidget {
     );
   }
 
-  /// Build empty view
-  Widget _buildEmptyView(
-    BuildContext context,
-    BehavioralPatternsController controller,
-  ) {
+  Widget _buildEmptyView(BuildContext context,
+      BehavioralPatternsController controller,) {
     return Center(
-      child: GlassContainer.panel(
+      child: GlassContainer(
+        padding: const EdgeInsets.all(AppTheme.spacingXL),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.search_off,
-              size: 64,
-              color: Colors.white.withValues(alpha: 0.5),
+              size: 48,
+              color: Colors.white.withValues(alpha: 0.6),
             ),
-
             const SizedBox(height: AppTheme.spacingL),
-
             Text(
-              'No Patterns Found',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: Colors.white),
+              'No patterns found',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-
             const SizedBox(height: AppTheme.spacingM),
-
             Text(
-              'Try adjusting your filters or search terms',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.7),
+              'Try adjusting your search or filter criteria.',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(
+                color: Colors.white.withValues(alpha: 0.8),
               ),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: AppTheme.spacingL),
-
-            GlassContainer.button(
-              onTap: () => controller.clearFilters(),
-              child: const Text(
-                'Clear Filters',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            ElevatedButton(
+              onPressed: controller.clearFilters,
+              child: const Text('Clear Filters'),
             ),
           ],
         ),
@@ -524,50 +495,199 @@ class BehavioralPatternsPage extends StatelessWidget {
     );
   }
 
-  /// Get difficulty color
-  Color _getDifficultyColor(String difficulty) {
-    switch (difficulty) {
-      case 'Beginner':
-        return Colors.green;
-      case 'Intermediate':
-        return Colors.orange;
-      case 'Advanced':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
+  /// Build multi-function floating action button
+  Widget _buildFloatingActionButton(BehavioralPatternsController controller) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        // Filter status indicator
+        if (controller.isFilterActive.value)
+          gfab.GlassFloatingActionButton(
+            mini: true,
+            onPressed: controller.clearFilters,
+            child: const Icon(Icons.clear, color: Colors.white, size: 20),
+          ),
+
+        if (controller.isFilterActive.value)
+          const SizedBox(height: AppTheme.spacingS),
+
+        // Main action based on view mode
+        GlassFloatingActionButton(
+          onPressed: () {
+            switch (controller.viewMode.value) {
+              case ViewMode.dashboard:
+                controller.showFilterDialog();
+                break;
+              case ViewMode.constellation:
+              // Toggle constellation info overlay
+                break;
+              case ViewMode.list:
+                controller.showFilterDialog();
+                break;
+            }
+          },
+          child: Obx(() {
+            switch (controller.viewMode.value) {
+              case ViewMode.dashboard:
+                return const Icon(Icons.filter_list, color: Colors.white);
+              case ViewMode.constellation:
+                return const Icon(Icons.info_outline, color: Colors.white);
+              case ViewMode.list:
+                return const Icon(Icons.filter_list, color: Colors.white);
+            }
+          }),
+        ),
+      ],
+    );
   }
 }
 
-/// Data model for behavioral pattern information
-class BehavioralPatternInfo {
-  final String name;
-  final String description;
-  final IconData icon;
-  final String difficulty;
-  final String category;
-  final List<String> keyBenefits;
-  final List<String> useCases;
-  final List<String> relatedPatterns;
-  final String towerDefenseExample;
-  final String towerDefenseContext;
-  final String communicationType; // Unique to behavioral patterns
-  final double complexity;
-  final bool isPopular;
 
-  const BehavioralPatternInfo({
-    required this.name,
-    required this.description,
-    required this.icon,
-    required this.difficulty,
-    required this.category,
-    required this.keyBenefits,
-    required this.useCases,
-    required this.relatedPatterns,
-    required this.towerDefenseExample,
-    required this.towerDefenseContext,
-    required this.communicationType,
-    required this.complexity,
-    this.isPopular = false,
+/// Compact pattern list item for list view
+class PatternListItemCompact extends StatelessWidget {
+  final PatternInfo pattern;
+  final VoidCallback onTap;
+  final bool isFavorite;
+
+  const PatternListItemCompact({
+    super.key,
+    required this.pattern,
+    required this.onTap,
+    this.isFavorite = false,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: GlassContainer(
+        padding: const EdgeInsets.all(AppTheme.spacingL),
+        child: Row(
+          children: [
+            // Pattern icon
+            Container(
+              padding: const EdgeInsets.all(AppTheme.spacingS),
+              decoration: BoxDecoration(
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(AppTheme.radiusM),
+              ),
+              child: Icon(
+                pattern.icon ?? Icons.psychology,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .primary,
+                size: 24,
+              ),
+            ),
+
+            const SizedBox(width: AppTheme.spacingL),
+
+            // Pattern info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    pattern.name,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    pattern.description,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.8),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                        ),
+                        child: Text(
+                          pattern.difficulty,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                        ),
+                        child: Text(
+                          pattern.complexity.toStringAsFixed(1),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme
+                                .of(context)
+                                .colorScheme
+                                .primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: AppTheme.spacingM),
+
+            // Favorite and arrow
+            Column(
+              children: [
+                Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.white60,
+                  size: 20,
+                ),
+                const SizedBox(height: 8),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white.withValues(alpha: 0.6),
+                  size: 16,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

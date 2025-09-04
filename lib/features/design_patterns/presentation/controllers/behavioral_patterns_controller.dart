@@ -9,7 +9,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../pages/behavioral_patterns_page.dart';
+import '../models/behavioral_pattern_info.dart';
 
 /// GetX controller for behavioral patterns using MVVM-C architecture.
 ///
@@ -29,6 +29,7 @@ class BehavioralPatternsController extends GetxController {
   final RxBool _isGridView = true.obs;
   final RxString _selectedDifficulty = 'All'.obs;
   final RxString _searchQuery = ''.obs;
+  final Rx<ViewMode> _viewMode = ViewMode.dashboard.obs;
 
   // Getters
   List<BehavioralPatternInfo> get allPatterns => _allPatterns.toList();
@@ -49,6 +50,8 @@ class BehavioralPatternsController extends GetxController {
 
   RxBool get isFilterActive =>
       (_selectedDifficulty.value != 'All' || _searchQuery.value.isNotEmpty).obs;
+
+  Rx<ViewMode> get viewMode => _viewMode;
 
   @override
   void onInit() {
@@ -148,6 +151,11 @@ class BehavioralPatternsController extends GetxController {
       '/patterns/detail',
       arguments: {'patternType': pattern.name, 'category': 'behavioral'},
     );
+  }
+
+  /// Set view mode
+  void setViewMode(ViewMode mode) {
+    _viewMode.value = mode;
   }
 
   /// Show filter dialog
