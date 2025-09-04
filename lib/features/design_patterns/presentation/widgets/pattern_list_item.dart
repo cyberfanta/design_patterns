@@ -11,7 +11,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../../../../core/presentation/components/glass_container.dart';
 import '../../../../core/presentation/themes/app_theme.dart';
-import '../pages/creational_patterns_page.dart';
+import '../cubits/creational_patterns_state.dart' show PatternInfo;
 
 /// Interactive list item for displaying pattern information.
 ///

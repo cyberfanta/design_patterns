@@ -13,6 +13,8 @@ import '../../../../core/presentation/components/glass_container.dart';
 import '../../../../core/presentation/components/mesh_gradient_background.dart';
 import '../../../../core/presentation/themes/app_theme.dart';
 import '../blocs/structural_patterns_bloc.dart';
+import '../blocs/structural_patterns_event.dart';
+import '../blocs/structural_patterns_state.dart';
 import '../widgets/pattern_detail_card.dart';
 
 /// Structural patterns page using MVP architecture with Blocs.
@@ -62,7 +64,7 @@ class _StructuralPatternsPageState extends State<StructuralPatternsPage> {
               BlocBuilder<StructuralPatternsBloc, StructuralPatternsState>(
                 builder: (context, state) {
                   if (state is StructuralPatternsLoaded) {
-                    return _buildPageIndicator(state.patterns.length);
+                    return _buildPageIndicator(state.allPatterns.length);
                   }
                   return const SizedBox.shrink();
                 },
@@ -83,11 +85,11 @@ class _StructuralPatternsPageState extends State<StructuralPatternsPage> {
                         }
 
                         if (state is StructuralPatternsError) {
-                          return _buildErrorView(state.message);
+                          return _buildErrorView(state.error);
                         }
 
                         if (state is StructuralPatternsLoaded) {
-                          return _buildPatternsPageView(state.patterns);
+                          return _buildPatternsPageView(state.allPatterns);
                         }
 
                         return const SizedBox.shrink();
@@ -189,7 +191,7 @@ class _StructuralPatternsPageState extends State<StructuralPatternsPage> {
             builder: (context, state) {
               if (state is StructuralPatternsLoaded) {
                 return Text(
-                  '${_currentPage + 1} of ${state.patterns.length}',
+                  '${_currentPage + 1} of ${state.allPatterns.length}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -296,7 +298,7 @@ class _StructuralPatternsPageState extends State<StructuralPatternsPage> {
   bool _canGoNext() {
     final state = context.read<StructuralPatternsBloc>().state;
     if (state is StructuralPatternsLoaded) {
-      return _currentPage < state.patterns.length - 1;
+      return _currentPage < state.allPatterns.length - 1;
     }
     return false;
   }
@@ -312,7 +314,7 @@ class _StructuralPatternsPageState extends State<StructuralPatternsPage> {
   /// Toggle pattern favorite
   void _toggleFavorite(StructuralPatternInfo pattern) {
     context.read<StructuralPatternsBloc>().add(
-      ToggleStructuralPatternFavorite(pattern),
+      ToggleStructuralPatternFavorite(pattern.id),
     );
   }
 }

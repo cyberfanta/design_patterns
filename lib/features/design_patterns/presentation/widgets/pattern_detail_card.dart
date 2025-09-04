@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/presentation/components/glass_container.dart';
 import '../../../../core/presentation/themes/app_theme.dart';
-import '../blocs/structural_patterns_bloc.dart';
+import '../blocs/structural_patterns_event.dart';
 
 /// Detailed card for pattern information display in PageView.
 ///
@@ -307,7 +307,7 @@ class PatternDetailCard extends StatelessWidget {
           ),
 
           Text(
-            pattern.compositionType,
+            pattern.compositionType ?? 'Unknown',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,

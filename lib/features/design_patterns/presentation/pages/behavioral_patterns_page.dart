@@ -8,12 +8,13 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/presentation/components/mesh_gradient_background.dart';
+
 import '../../../../core/presentation/components/glass_container.dart';
+import '../../../../core/presentation/components/mesh_gradient_background.dart';
 import '../../../../core/presentation/themes/app_theme.dart';
-import '../widgets/pattern_list_item.dart';
 import '../controllers/behavioral_patterns_controller.dart';
-import 'creational_patterns_page.dart'; // Para usar PatternInfo
+import '../cubits/creational_patterns_state.dart' show PatternInfo;
+import '../widgets/pattern_list_item.dart';
 
 /// Behavioral patterns page using MVVM-C architecture with GetX.
 ///
@@ -285,10 +286,14 @@ class BehavioralPatternsPage extends StatelessWidget {
           pattern: PatternInfo(
             name: pattern.name,
             description: pattern.description,
-            icon: pattern.icon,
             difficulty: pattern.difficulty,
+            category: pattern.category,
+            keyBenefits: pattern.keyBenefits,
             useCases: pattern.useCases,
-            towerDefenseContext: pattern.towerDefenseContext,
+            relatedPatterns: pattern.relatedPatterns,
+            towerDefenseExample: pattern.towerDefenseExample,
+            complexity: pattern.complexity,
+            isPopular: pattern.isPopular,
           ),
           onTap: () => controller.navigateToPattern(pattern),
           isFavorite: controller.favoritePatterns.contains(pattern),
@@ -540,17 +545,29 @@ class BehavioralPatternInfo {
   final String description;
   final IconData icon;
   final String difficulty;
+  final String category;
+  final List<String> keyBenefits;
   final List<String> useCases;
+  final List<String> relatedPatterns;
+  final String towerDefenseExample;
   final String towerDefenseContext;
   final String communicationType; // Unique to behavioral patterns
+  final double complexity;
+  final bool isPopular;
 
   const BehavioralPatternInfo({
     required this.name,
     required this.description,
     required this.icon,
     required this.difficulty,
+    required this.category,
+    required this.keyBenefits,
     required this.useCases,
+    required this.relatedPatterns,
+    required this.towerDefenseExample,
     required this.towerDefenseContext,
     required this.communicationType,
+    required this.complexity,
+    this.isPopular = false,
   });
 }

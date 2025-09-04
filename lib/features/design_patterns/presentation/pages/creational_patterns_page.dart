@@ -8,11 +8,13 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/presentation/components/mesh_gradient_background.dart';
+
 import '../../../../core/presentation/components/glass_container.dart';
+import '../../../../core/presentation/components/mesh_gradient_background.dart';
 import '../../../../core/presentation/themes/app_theme.dart';
-import '../widgets/pattern_list_item.dart';
 import '../cubits/creational_patterns_cubit.dart';
+import '../cubits/creational_patterns_state.dart';
+import '../widgets/pattern_list_item.dart';
 
 /// Creational patterns page using MVC architecture with Cubits.
 ///
@@ -208,7 +210,7 @@ class _CreationalPatternsPageState extends State<CreationalPatternsPage>
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  state.message,
+                  state.error,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -220,7 +222,9 @@ class _CreationalPatternsPageState extends State<CreationalPatternsPage>
           List<PatternInfo> patternsToShow;
 
           if (tab.title == 'Favorites') {
-            patternsToShow = state.favoritePatterns;
+            patternsToShow = state.allPatterns.where((pattern) =>
+                state.favoritePatterns.contains(pattern.name)
+            ).toList();
           } else {
             patternsToShow = tab.patterns;
           }
@@ -234,7 +238,7 @@ class _CreationalPatternsPageState extends State<CreationalPatternsPage>
                 pattern: pattern,
                 onTap: () => _navigateToPattern(context, pattern),
                 onFavoriteToggle: () => _toggleFavorite(context, pattern),
-                isFavorite: state.favoritePatterns.contains(pattern),
+                isFavorite: state.favoritePatterns.contains(pattern.name),
               );
             },
           );
@@ -255,7 +259,7 @@ class _CreationalPatternsPageState extends State<CreationalPatternsPage>
 
   /// MVC Pattern: Controller method for favorite toggle
   void _toggleFavorite(BuildContext context, PatternInfo pattern) {
-    context.read<CreationalPatternsCubit>().toggleFavorite(pattern);
+    context.read<CreationalPatternsCubit>().toggleFavorite(pattern.name);
   }
 
   /// Show filter dialog
@@ -304,26 +308,7 @@ class PatternTab {
   PatternTab({required this.title, required this.icon, required this.patterns});
 }
 
-/// Pattern information model
-class PatternInfo {
-  final String name;
-  final String description;
-  final IconData icon;
-  final String difficulty;
-  final List<String> useCases;
-  final String towerDefenseContext;
-
-  PatternInfo({
-    required this.name,
-    required this.description,
-    required this.icon,
-    required this.difficulty,
-    required this.useCases,
-    required this.towerDefenseContext,
-  });
-}
-
-// MVC Pattern: Model data
+// MVC Pattern: Model data - using PatternInfo from state
 final List<PatternInfo> _allCreationalPatterns = [
   ..._objectCreationPatterns,
   ..._instanceManagementPatterns,
@@ -333,41 +318,64 @@ final List<PatternInfo> _objectCreationPatterns = [
   PatternInfo(
     name: 'Factory Method',
     description: 'Create objects without specifying their concrete classes',
-    icon: Icons.build,
     difficulty: 'Beginner',
+    category: 'Object Creation',
+    keyBenefits: const [
+      'Tower creation',
+      'Enemy spawning',
+      'Projectile generation',
+    ],
     useCases: const [
       'Tower creation',
       'Enemy spawning',
       'Projectile generation',
     ],
-    towerDefenseContext:
+    relatedPatterns: const ['Abstract Factory', 'Builder', 'Prototype'],
+    towerDefenseExample:
         'Different tower types (Archer, Cannon, Magic) created through factory methods',
+    complexity: 4.0,
+    isPopular: true,
   ),
   PatternInfo(
     name: 'Abstract Factory',
     description: 'Create families of related objects',
-    icon: Icons.factory,
     difficulty: 'Intermediate',
+    category: 'Object Creation',
+    keyBenefits: const [
+      'Theme systems',
+      'Platform-specific UI',
+      'Game difficulty levels',
+    ],
     useCases: const [
       'Theme systems',
       'Platform-specific UI',
       'Game difficulty levels',
     ],
-    towerDefenseContext:
+    relatedPatterns: const ['Factory Method', 'Builder', 'Singleton'],
+    towerDefenseExample:
         'Medieval, Futuristic, and Fantasy tower families with matching environments',
+    complexity: 6.5,
   ),
   PatternInfo(
     name: 'Builder',
     description: 'Construct complex objects step by step',
-    icon: Icons.handyman,
     difficulty: 'Intermediate',
+    category: 'Object Creation',
+    keyBenefits: const [
+      'Tower customization',
+      'Level generation',
+      'Player configuration',
+    ],
     useCases: const [
       'Tower customization',
       'Level generation',
       'Player configuration',
     ],
-    towerDefenseContext:
+    relatedPatterns: const ['Factory Method', 'Abstract Factory', 'Composite'],
+    towerDefenseExample:
         'Building customized towers with different upgrades, weapons, and special abilities',
+    complexity: 5.5,
+    isPopular: true,
   ),
 ];
 
@@ -375,19 +383,26 @@ final List<PatternInfo> _instanceManagementPatterns = [
   PatternInfo(
     name: 'Singleton',
     description: 'Ensure a class has only one instance',
-    icon: Icons.looks_one,
     difficulty: 'Beginner',
+    category: 'Instance Management',
+    keyBenefits: const ['Game manager', 'Audio controller', 'Settings manager'],
     useCases: const ['Game manager', 'Audio controller', 'Settings manager'],
-    towerDefenseContext:
+    relatedPatterns: const ['Factory Method', 'Abstract Factory', 'Facade'],
+    towerDefenseExample:
         'Game state manager controlling wave progression and global game rules',
+    complexity: 3.0,
+    isPopular: true,
   ),
   PatternInfo(
     name: 'Prototype',
     description: 'Create objects by cloning existing instances',
-    icon: Icons.content_copy,
     difficulty: 'Intermediate',
+    category: 'Instance Management',
+    keyBenefits: const ['Enemy templates', 'Tower presets', 'Level copying'],
     useCases: const ['Enemy templates', 'Tower presets', 'Level copying'],
-    towerDefenseContext:
+    relatedPatterns: const ['Factory Method', 'Builder', 'Flyweight'],
+    towerDefenseExample:
         'Cloning enemy units with variations and pre-configured tower setups',
+    complexity: 5.0,
   ),
 ];

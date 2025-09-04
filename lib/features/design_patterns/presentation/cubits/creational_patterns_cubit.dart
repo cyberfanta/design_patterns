@@ -1,255 +1,317 @@
-/// Creational Patterns Cubit - State Management for Creational Category
+/// Creational Patterns Cubit - MVC Architecture with Flutter Bloc
 ///
-/// PATTERN: Command Pattern + State Pattern - Manages pattern loading and favorites
-/// WHERE: Design Patterns feature - Creational patterns state management
-/// HOW: Uses Cubit for simple state management with immutable states
-/// WHY: Implements MVC architecture with Cubits as specified for Creational category
+/// PATTERN: MVC Controller + Observer Pattern + State Pattern
+/// WHERE: Design Patterns feature - Creational patterns business logic
+/// HOW: Manages state transitions and business logic for creational patterns
+/// WHY: Provides clean separation between UI and business logic with reactive state management
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
-import '../pages/creational_patterns_page.dart';
 
-/// Cubit for managing creational patterns state
+import '../../../../core/logging/logging.dart';
+import 'creational_patterns_state.dart';
+
+/// MVC Controller - Cubit for managing Creational Patterns page state
+/// 
+/// PATTERN: MVC Controller + State Pattern - Manages business logic and state transitions
 class CreationalPatternsCubit extends Cubit<CreationalPatternsState> {
-  CreationalPatternsCubit() : super(CreationalPatternsInitial());
+  CreationalPatternsCubit() : super(CreationalPatternsInitial()) {
+    Log.debug('CreationalPatternsCubit: MVC Controller initialized');
+    loadPatterns();
+  }
 
-  List<PatternInfo> _allPatterns = [];
-  List<PatternInfo> _favoritePatterns = [];
-
-  /// Load all creational patterns
+  /// Load all creational patterns (Controller action)
   Future<void> loadPatterns() async {
-    emit(CreationalPatternsLoading());
-
+    emit(const CreationalPatternsLoading(message: 'Loading creational patterns...'));
+    Log.debug('Loading creational patterns...');
+    
     try {
-      // Simulate loading delay
-      await Future.delayed(const Duration(milliseconds: 800));
+      // Simulate data loading from Model layer
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      final allPatterns = _getAllCreationalPatterns();
+      final objectCreationPatterns = _getObjectCreationPatterns();  
+      final instanceManagementPatterns = _getInstanceManagementPatterns();
 
-      // Load patterns (in real app, this would come from repository)
-      _allPatterns = _getAllCreationalPatterns();
-
-      // Load favorites from local storage (simplified)
-      _favoritePatterns = await _loadFavorites();
-
-      emit(
-        CreationalPatternsLoaded(
-          patterns: _allPatterns,
-          favoritePatterns: _favoritePatterns,
-        ),
+      final loadedState = CreationalPatternsLoaded(
+        allPatterns: allPatterns,
+        objectCreationPatterns: objectCreationPatterns,
+        instanceManagementPatterns: instanceManagementPatterns,
+        filteredPatterns: allPatterns,
       );
+
+      emit(loadedState);
+      Log.debug('Patterns loaded successfully with ${loadedState.allPatterns.length} patterns');
+      
     } catch (e) {
-      emit(CreationalPatternsError(message: e.toString()));
+      final errorState = CreationalPatternsError(message: 'Failed to load patterns: $e');
+      emit(errorState);
+      Log.debug('Error in loadPatterns: $e');
+    }
+  }
+
+  /// Select a specific pattern for detailed view
+  void selectPattern(PatternInfo pattern) {
+    final currentState = state;
+    if (currentState is CreationalPatternsLoaded) {
+      emit(currentState.copyWith(selectedPattern: pattern));
+      Log.debug('CreationalPatternsCubit: Pattern selected: ${pattern.name}');
+    }
+  }
+
+  /// Clear selected pattern
+  void clearSelection() {
+    final currentState = state;
+    if (currentState is CreationalPatternsLoaded) {
+      final newState = currentState.copyWith(selectedPattern: null);
+      emit(newState);
+      Log.debug('CreationalPatternsCubit: Selection cleared');
+    }
+  }
+
+  /// Switch between different tabs (Object Creation, Instance Management)
+  void switchTab(int tabIndex) {
+    final currentState = state;
+    if (currentState is CreationalPatternsLoaded) {
+      emit(currentState.copyWith(selectedTabIndex: tabIndex));
+      Log.debug('CreationalPatternsCubit: Switched to tab $tabIndex');
+    }
+  }
+
+  /// Toggle expand/collapse for a pattern card
+  void toggleExpanded(String patternId) {
+    final currentState = state;
+    if (currentState is CreationalPatternsLoaded) {
+      final expandedStates = Map<String, bool>.from(currentState.expandedStates);
+      expandedStates[patternId] = !(expandedStates[patternId] ?? false);
+      
+      emit(currentState.copyWith(expandedStates: expandedStates));
+      Log.debug('CreationalPatternsCubit: Toggled expand for $patternId');
     }
   }
 
   /// Toggle favorite status for a pattern
-  void toggleFavorite(PatternInfo pattern) {
-    if (state is CreationalPatternsLoaded) {
-      final currentState = state as CreationalPatternsLoaded;
-      List<PatternInfo> updatedFavorites;
-
-      if (_favoritePatterns.contains(pattern)) {
-        updatedFavorites = List.from(_favoritePatterns)..remove(pattern);
+  void toggleFavorite(String patternId) {
+    final currentState = state;
+    if (currentState is CreationalPatternsLoaded) {
+      final favoritePatterns = Set<String>.from(currentState.favoritePatterns);
+      
+      if (favoritePatterns.contains(patternId)) {
+        favoritePatterns.remove(patternId);
+        Log.debug('CreationalPatternsCubit: Removed $patternId from favorites');
       } else {
-        updatedFavorites = List.from(_favoritePatterns)..add(pattern);
+        favoritePatterns.add(patternId);
+        Log.debug('CreationalPatternsCubit: Added $patternId to favorites');
       }
+      
+      emit(currentState.copyWith(favoritePatterns: favoritePatterns));
+    }
+  }
 
-      _favoritePatterns = updatedFavorites;
+  /// Search patterns by query
+  void searchPatterns(String query) {
+    final currentState = state;
+    if (currentState is CreationalPatternsLoaded) {
+      final filteredPatterns = query.isEmpty
+          ? currentState.allPatterns
+          : currentState.allPatterns.where((pattern) {
+              return pattern.name.toLowerCase().contains(query.toLowerCase()) ||
+                     pattern.description.toLowerCase().contains(query.toLowerCase()) ||
+                     pattern.useCases.any((useCase) => 
+                       useCase.toLowerCase().contains(query.toLowerCase()));
+            }).toList();
 
-      // Save to local storage (simplified)
-      _saveFavorites(updatedFavorites);
-
-      emit(
-        CreationalPatternsLoaded(
-          patterns: currentState.patterns,
-          favoritePatterns: updatedFavorites,
-        ),
-      );
+      emit(currentState.copyWith(
+        searchQuery: query,
+        filteredPatterns: filteredPatterns,
+      ));
+      Log.debug('CreationalPatternsCubit: Search query: "$query", found ${filteredPatterns.length} patterns');
     }
   }
 
   /// Filter patterns by difficulty
   void filterByDifficulty(String difficulty) {
-    if (state is CreationalPatternsLoaded) {
-      final filteredPatterns = _allPatterns
-          .where(
-            (pattern) => difficulty.isEmpty || pattern.difficulty == difficulty,
-          )
-          .toList();
+    final currentState = state;
+    if (currentState is CreationalPatternsLoaded) {
+      final filteredPatterns = difficulty == 'All'
+          ? currentState.allPatterns
+          : currentState.allPatterns.where((pattern) =>
+              pattern.difficulty == difficulty).toList();
 
-      emit(
-        CreationalPatternsLoaded(
-          patterns: filteredPatterns,
-          favoritePatterns: _favoritePatterns,
-        ),
-      );
+      emit(currentState.copyWith(
+        selectedDifficulty: difficulty,
+        filteredPatterns: filteredPatterns,
+      ));
+      Log.debug('CreationalPatternsCubit: Filtered by difficulty: $difficulty, found ${filteredPatterns.length} patterns');
     }
   }
 
-  /// Search patterns by name or description
-  void searchPatterns(String query) {
-    if (state is CreationalPatternsLoaded) {
-      if (query.isEmpty) {
-        emit(
-          CreationalPatternsLoaded(
-            patterns: _allPatterns,
-            favoritePatterns: _favoritePatterns,
-          ),
-        );
-        return;
-      }
+  /// Run pattern demonstration
+  Future<void> runPatternDemo(PatternInfo pattern) async {
+    final demoRunningState = CreationalPatternExecuting(
+      pattern: pattern,
+      executionLog: 'Starting ${pattern.name} demonstration...\n',
+      results: [],
+    );
 
-      final filteredPatterns = _allPatterns
-          .where(
-            (pattern) =>
-                pattern.name.toLowerCase().contains(query.toLowerCase()) ||
-                pattern.description.toLowerCase().contains(query.toLowerCase()),
-          )
-          .toList();
+    emit(demoRunningState);
+    Log.debug('CreationalPatternsCubit: Running demo for ${pattern.name}');
 
-      emit(
-        CreationalPatternsLoaded(
-          patterns: filteredPatterns,
-          favoritePatterns: _favoritePatterns,
-        ),
+    try {
+      // Simulate pattern execution
+      await Future.delayed(const Duration(milliseconds: 1500));
+      
+      final results = _executePatternDemo(pattern);
+      
+      final completedState = CreationalPatternExecuted(
+        pattern: pattern,
+        executionLog: '${demoRunningState.executionLog}Demo completed successfully!\n',
+        results: results,
+        executionTime: const Duration(milliseconds: 1500),
       );
+
+      emit(completedState);
+      Log.debug('CreationalPatternsCubit: Demo completed for ${pattern.name}');
+      
+    } catch (e) {
+      final errorState = CreationalPatternsError(message: 'Demo execution failed: $e');
+      emit(errorState);
+      Log.debug('Error in runPatternDemo: $e');
     }
   }
 
-  /// Mark pattern as completed
-  void markPatternCompleted(PatternInfo pattern) {
-    // In real app, this would update user progress
-    // For now, just emit a success state
-    if (state is CreationalPatternsLoaded) {
-      final currentState = state as CreationalPatternsLoaded;
-      emit(
-        CreationalPatternsLoaded(
-          patterns: currentState.patterns,
-          favoritePatterns: currentState.favoritePatterns,
-        ),
-      );
+  /// Execute pattern demonstration (simulated)
+  List<String> _executePatternDemo(PatternInfo pattern) {
+    switch (pattern.name) {
+      case 'Singleton':
+        return [
+          'Creating first Tower instance: Tower@123',
+          'Attempting to create second Tower instance...',
+          'Returned existing instance: Tower@123',
+          'Singleton pattern verified: Same instance returned!',
+        ];
+      case 'Factory Method':
+        return [
+          'TowerFactory.createTower(type: "Artillery")',
+          'ArtilleryTowerFactory instantiated',
+          'Created: ArtilleryTower (damage: 150, range: 8)',
+          'Tower ready for deployment!',
+        ];
+      case 'Abstract Factory':
+        return [
+          'GameElementFactory.createFactory("Medieval")',
+          'MedievalFactory instantiated',
+          'Creating tower: CatapultTower',
+          'Creating enemy: KnightEnemy',
+          'Medieval game set ready!',
+        ];
+      case 'Builder':
+        return [
+          'TowerBuilder starting configuration...',
+          'Setting damage: 200, range: 10',
+          'Adding upgrade: "Double Shot"',
+          'Building tower...',
+          'SuperTower created successfully!',
+        ];
+      case 'Prototype':
+        return [
+          'TowerPrototype registry initialized',
+          'Cloning ArcaneTower prototype',
+          'Customizing cloned tower properties',
+          'Tower clone deployed at position (5,7)',
+          'Original prototype preserved for future use',
+        ];
+      default:
+        return [
+          'Pattern demonstration started',
+          'Executing ${pattern.name} logic...',
+          'Pattern completed successfully!',
+        ];
     }
   }
 
   /// Get all creational patterns
   List<PatternInfo> _getAllCreationalPatterns() {
     return [
+      ..._getObjectCreationPatterns(),
+      ..._getInstanceManagementPatterns(),
+    ];
+  }
+
+  /// Get object creation patterns
+  List<PatternInfo> _getObjectCreationPatterns() {
+    return [
       PatternInfo(
         name: 'Factory Method',
-        description: 'Create objects without specifying their concrete classes',
-        icon: Icons.build,
-        difficulty: 'Beginner',
-        useCases: const [
-          'Tower creation',
-          'Enemy spawning',
-          'Projectile generation',
-        ],
-        towerDefenseContext:
-            'Different tower types (Archer, Cannon, Magic) created through factory methods',
+        description: 'Create objects through a common interface',
+        difficulty: 'Intermediate',
+        category: 'Object Creation',
+        keyBenefits: ['Loose coupling', 'Easy extension', 'Single responsibility'],
+        useCases: ['Object creation', 'Plugin systems', 'Framework extension'],
+        relatedPatterns: ['Abstract Factory', 'Builder', 'Prototype'],
+        towerDefenseExample: 'TowerFactory creates different tower types (Artillery, Magic, Sniper)',
+        icon: Icons.factory,
+        complexity: 6.0,
+        isPopular: true,
       ),
       PatternInfo(
         name: 'Abstract Factory',
         description: 'Create families of related objects',
-        icon: Icons.factory,
-        difficulty: 'Intermediate',
-        useCases: const [
-          'Theme systems',
-          'Platform-specific UI',
-          'Game difficulty levels',
-        ],
-        towerDefenseContext:
-            'Medieval, Futuristic, and Fantasy tower families with matching environments',
+        difficulty: 'Advanced',
+        category: 'Object Creation',
+        keyBenefits: ['Consistent object families', 'Easy switching', 'Strong typing'],
+        useCases: ['Theme systems', 'Cross-platform', 'Product families'],
+        relatedPatterns: ['Factory Method', 'Singleton', 'Prototype'],
+        towerDefenseExample: 'ElementalFactory creates fire/ice/earth tower+enemy combinations',
+        icon: Icons.widgets,
+        complexity: 8.0,
+        isPopular: true,
       ),
       PatternInfo(
         name: 'Builder',
         description: 'Construct complex objects step by step',
-        icon: Icons.handyman,
         difficulty: 'Intermediate',
-        useCases: const [
-          'Tower customization',
-          'Level generation',
-          'Player configuration',
-        ],
-        towerDefenseContext:
-            'Building customized towers with different upgrades, weapons, and special abilities',
-      ),
-      PatternInfo(
-        name: 'Singleton',
-        description: 'Ensure a class has only one instance',
-        icon: Icons.looks_one,
-        difficulty: 'Beginner',
-        useCases: const [
-          'Game manager',
-          'Audio controller',
-          'Settings manager',
-        ],
-        towerDefenseContext:
-            'Game state manager controlling wave progression and global game rules',
-      ),
-      PatternInfo(
-        name: 'Prototype',
-        description: 'Create objects by cloning existing instances',
-        icon: Icons.content_copy,
-        difficulty: 'Intermediate',
-        useCases: const ['Enemy templates', 'Tower presets', 'Level copying'],
-        towerDefenseContext:
-            'Cloning enemy units with variations and pre-configured tower setups',
+        category: 'Object Creation',
+        keyBenefits: ['Flexible construction', 'Readable code', 'Immutable objects'],
+        useCases: ['Complex configuration', 'Fluent APIs', 'Optional parameters'],
+        relatedPatterns: ['Abstract Factory', 'Composite', 'Strategy'],
+        towerDefenseExample: 'TowerBuilder configures damage, range, upgrades, and special abilities',
+        icon: Icons.construction,
+        complexity: 5.5,
+        isPopular: true,
       ),
     ];
   }
 
-  /// Load favorites from local storage
-  Future<List<PatternInfo>> _loadFavorites() async {
-    // Simulate loading from local storage
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    // In real app, would load from SharedPreferences or SQLite
-    return [];
+  /// Get instance management patterns
+  List<PatternInfo> _getInstanceManagementPatterns() {
+    return [
+      PatternInfo(
+        name: 'Singleton',
+        description: 'Ensure only one instance exists globally',
+        difficulty: 'Beginner',
+        category: 'Instance Management',
+        keyBenefits: ['Global access', 'Resource control', 'State consistency'],
+        useCases: ['Configuration', 'Logging', 'Caching'],
+        relatedPatterns: ['Factory Method', 'Observer', 'State'],
+        towerDefenseExample: 'GameManager singleton controls game state, score, and wave progression',
+        icon: Icons.looks_one,
+        complexity: 3.0,
+        isPopular: true,
+      ),
+      PatternInfo(
+        name: 'Prototype',
+        description: 'Create objects by cloning existing instances',
+        difficulty: 'Intermediate',
+        category: 'Instance Management',
+        keyBenefits: ['Performance optimization', 'Dynamic creation', 'State preservation'],
+        useCases: ['Object cloning', 'Template systems', 'Performance optimization'],
+        relatedPatterns: ['Factory Method', 'Memento', 'Command'],
+        towerDefenseExample: 'TowerPrototype registry for quickly spawning pre-configured tower templates',
+        icon: Icons.copy,
+        complexity: 6.5,
+      ),
+    ];
   }
-
-  /// Save favorites to local storage
-  Future<void> _saveFavorites(List<PatternInfo> favorites) async {
-    // Simulate saving to local storage
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    // In real app, would save to SharedPreferences or SQLite
-    // Could also sync with user profile in Firebase
-  }
-}
-
-/// Base state for creational patterns
-abstract class CreationalPatternsState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
-
-/// Initial state
-class CreationalPatternsInitial extends CreationalPatternsState {}
-
-/// Loading state
-class CreationalPatternsLoading extends CreationalPatternsState {}
-
-/// Loaded state with patterns data
-class CreationalPatternsLoaded extends CreationalPatternsState {
-  final List<PatternInfo> patterns;
-  final List<PatternInfo> favoritePatterns;
-
-  CreationalPatternsLoaded({
-    required this.patterns,
-    required this.favoritePatterns,
-  });
-
-  @override
-  List<Object?> get props => [patterns, favoritePatterns];
-}
-
-/// Error state
-class CreationalPatternsError extends CreationalPatternsState {
-  final String message;
-
-  CreationalPatternsError({required this.message});
-
-  @override
-  List<Object?> get props => [message];
 }
