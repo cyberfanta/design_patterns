@@ -88,3 +88,19 @@ class NotFoundFailure extends Failure {
     super.code = 'NOT_FOUND_ERROR',
   });
 }
+
+// Technical failures
+class TechnicalFailure extends Failure {
+  const TechnicalFailure({
+    required super.message,
+    super.code = 'TECHNICAL_ERROR',
+  });
+}
+
+// Security failures
+class SecurityFailure extends Failure {
+  const SecurityFailure({
+    required super.message,
+    super.code = 'SECURITY_ERROR',
+  });
+}
