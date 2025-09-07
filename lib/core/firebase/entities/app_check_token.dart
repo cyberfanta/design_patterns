@@ -57,8 +57,9 @@ class AppCheckToken extends Equatable {
     final remaining = remainingValidity;
     if (remaining.inMinutes < 5) return 'Expires very soon';
     if (remaining.inMinutes < 15) return 'Expires soon';
-    if (remaining.inHours < 1)
+    if (remaining.inHours < 1) {
       return 'Expires in ${remaining.inMinutes} minutes';
+    }
     return 'Valid for ${remaining.inHours} hours';
   }
 
