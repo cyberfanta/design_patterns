@@ -38,7 +38,8 @@ class FirebaseCrashlyticsService implements CrashlyticsContract {
   @override
   Future<Either<Failure, void>> initialize() async {
     Log.debug(
-        'FirebaseCrashlyticsService: Delegating initialization to CrashlyticsCoreService');
+      'FirebaseCrashlyticsService: Delegating initialization to CrashlyticsCoreService',
+    );
 
     // Initialize core service
     final result = await _coreService.initialize();
@@ -47,7 +48,8 @@ class FirebaseCrashlyticsService implements CrashlyticsContract {
       // Set up error handlers chain for advanced error handling
       _setupErrorHandlerChain();
       Log.success(
-          'FirebaseCrashlyticsService: Advanced error handling initialized');
+        'FirebaseCrashlyticsService: Advanced error handling initialized',
+      );
     }
 
     return result;
@@ -57,14 +59,16 @@ class FirebaseCrashlyticsService implements CrashlyticsContract {
   void _setupErrorHandlerChain() {
     _errorChain = ErrorHandlerChain();
     Log.debug(
-        'FirebaseCrashlyticsService: Advanced error handler chain configured');
+      'FirebaseCrashlyticsService: Advanced error handler chain configured',
+    );
   }
 
   /// Enable or disable crashlytics - delegate to core
   @override
   Future<Either<Failure, void>> setCrashlyticsEnabled(bool enabled) async {
     Log.debug(
-        'FirebaseCrashlyticsService: Delegating crashlytics toggle to core service');
+      'FirebaseCrashlyticsService: Delegating crashlytics toggle to core service',
+    );
     return await _coreService.setCrashlyticsEnabled(enabled);
   }
 
@@ -79,7 +83,8 @@ class FirebaseCrashlyticsService implements CrashlyticsContract {
   }) async {
     try {
       Log.debug(
-          'FirebaseCrashlyticsService: Processing error with advanced chain');
+        'FirebaseCrashlyticsService: Processing error with advanced chain',
+      );
 
       // Create crash report for advanced processing
       final crashReport = CrashReport.custom(
@@ -172,10 +177,10 @@ class FirebaseCrashlyticsService implements CrashlyticsContract {
 }
 
 /// Tower Defense Crashlytics Helper - Compatibility Methods
-/// Educational Context: Legacy helper methods for backward compatibility  
+/// Educational Context: Legacy helper methods for backward compatibility
 class TowerDefenseCrashlyticsHelper {
-  static final FirebaseCrashlyticsService _crashlytics = FirebaseCrashlyticsService
-      .instance;
+  static final FirebaseCrashlyticsService _crashlytics =
+      FirebaseCrashlyticsService.instance;
 
   /// Record pattern learning error - simplified
   static Future<Either<Failure, void>> recordPatternLearningError({
@@ -226,23 +231,29 @@ class TowerDefenseCrashlyticsHelper {
     String? difficulty,
   }) async {
     await _crashlytics.setCustomKey(
-        key: 'current_pattern', value: currentPattern);
+      key: 'current_pattern',
+      value: currentPattern,
+    );
     await _crashlytics.setCustomKey(
-        key: 'learning_phase', value: learningPhase);
+      key: 'learning_phase',
+      value: learningPhase,
+    );
     if (difficulty != null) {
       await _crashlytics.setCustomKey(
-          key: 'difficulty_level', value: difficulty);
+        key: 'difficulty_level',
+        value: difficulty,
+      );
     }
   }
 }
 
 /// Migration Notice
-/// 
+///
 /// DEPRECATED: This advanced FirebaseCrashlyticsService is maintained for backward compatibility.
-/// 
+///
 /// NEW CODE SHOULD USE:
 /// - CrashlyticsCoreService for basic crash reporting
 /// - ErrorHandlingFacade for advanced error processing
 /// - TowerDefenseCrashlyticsCoreHelper for game-specific operations
-/// 
+///
 /// This wrapper will be removed in a future version.
